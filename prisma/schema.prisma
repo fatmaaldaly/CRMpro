@@ -1,0 +1,97 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Profile {
+  id    String @id @default(uuid())
+  email String @unique
+  name  String
+
+  role Role
+
+  avatarUrl String?
+
+  isActive Boolean @default(true)
+
+  leads      Lead[]
+  activities Activity[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  AGENT
+}
+
+model Lead {
+  id String @id @default(uuid())
+
+  name  String
+  phone String
+  email String
+
+  stage  LeadStage  @default(NEW)
+  status LeadStatus @default(OPEN)
+
+  assignedToId String?
+  assignedTo   Profile? @relation(fields: [assignedToId], references: [id])
+
+  activities Activity[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum LeadStatus {
+  OPEN
+  WON
+  LOST
+}
+
+enum LeadStage {
+  NEW
+  CONTACTED
+  QUALIFIED
+  NEGOTIATING
+}
+
+model Activity {
+  id String @id @default(uuid())
+
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id])
+
+  actorId String
+  actor   Profile @relation(fields: [actorId], references: [id])
+
+  content String?
+  type    ActivityType
+
+  createdAt DateTime @default(now())
+}
+
+enum ActivityType {
+  LEAD_CREATED
+  NOTE
+  CALL_ATTEMPT
+  STATUS_CHANGE
+  STAGE_CHANGE
+  ASSIGNMENT_CHANGE
+  REMINDER_CREATED
+  ATTACHMENT_ADDED
+  AI_LEAD_BRIEF_GENERATED
+  AI_FOLLOWUP_DRAFT_GENERATED
+}
