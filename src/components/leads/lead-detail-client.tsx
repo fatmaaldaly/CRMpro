@@ -7,6 +7,8 @@ import { useGetLead } from "@/lib/tanstack/useLeads";
 import { formatLeadDate, StatusBadge } from "@/components/leads/reusable";
 import { Overview } from "./lead-details/Overview";
 import { Timeline } from "./lead-details/Timeline";
+import { AddNoteDialog } from "./lead-details/AddNoteDialog";
+import LogCallDialog from "./lead-details/LogCallDialog";
 
 export function LeadDetailClient({
   id,
@@ -33,17 +35,24 @@ export function LeadDetailClient({
 
   return (
     <div className="space-y-6 p-6">
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-semibold">{data.name}</h1>
-            <StatusBadge status={data.status} />
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Created on {formatLeadDate(data.createdAt)}
-          </p>
+      <div className="flex items-center justify-between gap-4">
+        {/* Left side: Title and Status */}
+        <div className="flex items-center gap-3">
+          <h1 className="text-3xl font-semibold">{data.name}</h1>
+          <StatusBadge status={data.status} />
+        </div>
+        <div className="gap-2 flex">
+          <AddNoteDialog leadId={id} />
+          <LogCallDialog leadId={id} />
         </div>
       </div>
+
+      <p className="text-sm text-muted-foreground">
+        Created on {formatLeadDate(data.createdAt)}
+      </p>
+
+
+
 
       <Tabs defaultValue="overview" className="space-y-0">
         <TabsList>

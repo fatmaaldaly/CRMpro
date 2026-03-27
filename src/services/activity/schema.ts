@@ -9,16 +9,17 @@ const createActivitySchema = z
     leadId: z.uuid(),
     actorId: z.uuid(),
     type: z.enum(ActivityType),
-    meta: z
-      .object({
-        from: z.unknown(),
-        to: z.unknown(),
-      })
-      .optional(),
+    // meta: z
+    //   .object({
+    //     from: z.unknown(),
+    //     to: z.unknown(),
+    //   })
+    //   .optional(),
+    meta: z.record(z.string(), z.unknown()).optional(),
   })
   .superRefine((data) => {
     if (
-      ["STATUS_CHANGE", "STAGE_CHANGE", "ASSIGNMENT_CHANGE"].includes(data.type)
+      ["STATUS_CHANGE", "STAGE_CHANGE", "ASSIGNMENT_CHANGE", "NOTE"].includes(data.type)
     ) {
       if (!data.meta) {
         throw new Error("Meta is required for status change");
@@ -36,6 +37,16 @@ const createActivitySchema = z
         case ActivityType.ASSIGNMENT_CHANGE:
           data.meta.from = z.string().parse(data.meta.from); // agent name
           data.meta.to = z.string().parse(data.meta.to); // agent name
+          break;
+        // case ActivityType.NOTE:
+        //   data.meta.content = z.string().min(1).max(5000).parse(data.meta.content);
+        //    break;
+        case ActivityType.NOTE:
+          if (!data.meta || typeof data.meta.content !== "string") {
+            throw new Error("Content is required for note");
+          }
+
+          data.meta.content = z.string().min(1).max(5000).parse(data.meta.content);
           break;
         default:
           break;
@@ -68,3 +79,26 @@ export type ListLeadActivitiesResponseData = {
   activities: ActivitySummaryItem[];
   pagination: PaginationMeta;
 };
+
+
+export const createNoteSchema = z.object({
+  content: z.string().min(1).max(5000),
+});
+
+export type CreateNoteRequest = z.infer<typeof createNoteSchema>;
+
+
+const callOutcomeEnum = z.enum([
+  "NO_ANSWER",
+  "ANSWERED",
+  "WRONG_NUMBER",
+  "BUSY",
+  "CALL_BACK_LATER",
+]);
+
+export const createCallAttemptSchema = z.object({
+  outcome: callOutcomeEnum,
+  notes: z.string().max(5000).optional(),
+});
+
+export type CreateCallAttemptRequest = z.infer<typeof createCallAttemptSchema>;

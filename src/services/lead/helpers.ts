@@ -1,12 +1,19 @@
 import { ActivityType, Lead } from "@/generated/prisma/client";
 import { CreateActivityRequest } from "../activity";
 
+
+// This function checks what changed in a lead
+// Creates activity logs for each change
+// Returns a list of activities
+// Helps build a history (audit trail) of all updates
+
 interface BuildLeadChangeActivitiesParams {
   leadId: string;
   actorId: string;
   existingLead: Lead;
   newLead: Partial<Lead>;
 }
+
 export function buildLeadChangeActivities({
   leadId,
   actorId,

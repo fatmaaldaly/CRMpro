@@ -13,6 +13,7 @@ export async function createActivities(
   request: CreateActivityRequest[],
   tx?: Prisma.TransactionClient,
 ) {
+  // Validate
   const validated = createManyActivitiesSchema.safeParse(request);
   if (!validated.success) {
     return {
@@ -20,7 +21,8 @@ export async function createActivities(
       errors: validated.error.flatten().fieldErrors,
     };
   }
-
+  
+  // Transform valid data (prepare it for db insertion)
   const activitiesToCreate: Prisma.ActivityCreateManyInput[] = [];
   for (const activity of validated.data) {
     const content = buildActivityContent(activity.type, activity.meta);
@@ -32,11 +34,12 @@ export async function createActivities(
     });
   }
 
+  // Insert to db all activities at once
   const countCreated = await dbCreateActivities(activitiesToCreate, tx);
 
   return {
     success: true as const,
-    count: countCreated.count,
+    count: countCreated.count, // number of activities created
   };
 }
 
@@ -47,13 +50,15 @@ export async function getLeadActivities(
   const where: Prisma.ActivityWhereInput = {
     leadId: request.leadId,
   };
-
+  
+  // Role-scoped filtering
   if (userSnapshot.role === Role.AGENT) {
     where.lead = {
       assignedToId: userSnapshot.id,
     };
   }
-
+  
+  // Gets activities with pagination (so you don’t load hundreds at once)
   const result = await dbGetLeadActivities(where, {
     page: request.page,
     pageSize: request.pageSize,

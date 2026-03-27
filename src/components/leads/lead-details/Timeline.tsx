@@ -35,13 +35,15 @@ export const Timeline = ({ leadId }: { leadId: string }) => {
   const startItem = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const endItem = total === 0 ? 0 : Math.min(page * pageSize, total);
 
-  return <div className="space-y-0">
+  return <div className="space-y-4">
+  
     {activities.map((activity, idx) => {
       const Icon = activityIcons[activity.type]
       const label = activityLabels[activity.type]
       const isLast = idx === activities.length - 1
 
       return (
+ 
         <div key={activity.id} className="flex gap-3">
           <div className="flex flex-col items-center">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted">
@@ -55,6 +57,7 @@ export const Timeline = ({ leadId }: { leadId: string }) => {
               {activity.actor && (
                 <span className="text-xs text-muted-foreground">by {activity.actor.name}</span>
               )}
+
               <span
                 className="ml-auto text-xs text-muted-foreground"
                 title={new Date(activity.createdAt).toLocaleString()}

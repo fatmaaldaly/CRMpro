@@ -1,4 +1,6 @@
+import { ActivityType } from "@/generated/prisma/enums";
 import { ActivitySchema, ActivityService } from "@/services/activity";
+import { createNoteSchema } from "@/services/activity/schema";
 import { authenticateUser } from "@/utils/authenticateUser";
 import { handleRouteError } from "@/utils/handleRouteError";
 import { NextRequest, NextResponse } from "next/server";
@@ -28,6 +30,41 @@ export async function GET(
     });
 
     return NextResponse.json({ success: true, data: activities });
+  } catch (error) {
+    return handleRouteError(error);
+  }
+}
+
+
+
+// in src/app/api/leads/[id]/activities/route.ts
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const { id } = await params;
+    const profile = await authenticateUser();
+    const body = await request.json();
+
+    // Validate: { content: string, min 1 char }
+    const validated = createNoteSchema.parse(body); 
+    // Create activity with type NOTE
+    // Call ActivityService.create
+    const activity = await ActivityService.create([
+      {
+      leadId: id,
+      actorId: profile.id,
+      type: ActivityType.NOTE,
+      meta: {
+        content: validated.content,
+      },
+    }
+    ]);
+
+    // Return the created activity
+    return NextResponse.json({ success: true, data: activity });
   } catch (error) {
     return handleRouteError(error);
   }

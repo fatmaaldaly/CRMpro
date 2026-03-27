@@ -16,14 +16,15 @@ export class LeadServiceError extends Error {
   }
 }
 
+
+// profile: user making req, params: page, pageSize
+// Get the leads this user is allowed to see, with pagination
 export async function listLeads(profile: Profile, params: ListLeadsParams) {
   // Build where clause
   const where: Prisma.LeadWhereInput = {};
 
-  // Role-scoping contract:
-  // - AGENT can only read assigned leads.
-  // - MANAGER/ADMIN can read all leads.
-  // UI-level bulk actions (checkboxes/reassign toolbar) should respect this scope.
+  // If agent, only show leads assigned to them
+  // manager/admin can see all leads
   if (profile.role === Role.AGENT) {
     where.assignedToId = profile.id;
   }
@@ -31,6 +32,7 @@ export async function listLeads(profile: Profile, params: ListLeadsParams) {
   return dbListLeads(where, params);
 }
 
+// Create a new lead and log that it was created. Make sure both happen together
 export async function createLead(profile: Profile, data: CreateLeadRequest) {
   const result = await prisma.$transaction(async (tx) => {
     const lead = await dbCreateLead(profile, data, tx);
@@ -51,6 +53,7 @@ export async function createLead(profile: Profile, data: CreateLeadRequest) {
   return result;
 }
 
+// Find this lead and make sure the user is allowed to see it
 export async function getLead(profile: Profile, id: string) {
   const lead = await dbGetLeadById(id);
 
@@ -65,6 +68,8 @@ export async function getLead(profile: Profile, id: string) {
   return lead;
 }
 
+
+// Update this lead only if the user is allowed. Log every change. Make sure both happen together
 export async function updateLead(
   profile: Profile,
   id: string,
