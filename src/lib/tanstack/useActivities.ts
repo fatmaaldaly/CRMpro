@@ -43,7 +43,7 @@ export function useLogCallAttempt(leadId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: CreateCallAttemptRequest) => {
-      const response = await api.post(`/leads/${leadId}/call-attempt`, data);
+      const response = await api.post(`/leads/${leadId}/activities/call-attempt`, data);
       return response.data.data;
     },
     onSuccess: () => {

@@ -96,24 +96,25 @@ export default function LogCallDialog({ leadId }: { leadId: string }) {
                 <SelectValue placeholder="Answered" />
             </SelectTrigger>
             <SelectContent>
-                <SelectItem value="ANSWERED">Answered</SelectItem>
-                <SelectItem value="NO_ANSWER">No Answer</SelectItem>
-                <SelectItem value="WRONG_NUMBER">Wrong Number</SelectItem>
-                <SelectItem value="BUSY">Busy</SelectItem>
-                <SelectItem value="CALL_BACK_LATER">Call Back Later</SelectItem>
+                <SelectItem value="ANSWERED">ANSWERED</SelectItem>
+                <SelectItem value="NO_ANSWER">NO_ANSWER</SelectItem>
+                <SelectItem value="WRONG_NUMBER">WRONG_NUMBER</SelectItem>
+                <SelectItem value="BUSY">BUSY</SelectItem>
+                <SelectItem value="CALL_BACK_LATER">CALL_BACK_LATER</SelectItem>
             </SelectContent>
             </Select>
             </div>
   
 
           <div className="space-y-2">
-            <Label htmlFor="email">Duration (minutes)</Label>
+            <Label htmlFor="duration">Duration (minutes)</Label>
             <input
               id="duration"
               type="number"
               value={duration}
               onChange={(event) => setDuration(event.target.value)}
               disabled={logCallAttempt.isPending}
+              className="w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50"
               required
             />
           </div>
