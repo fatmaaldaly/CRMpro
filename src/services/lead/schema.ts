@@ -30,7 +30,7 @@ export const editLeadSchema = z.object({
   email: z.email().optional(),
   stage: z.nativeEnum(LeadStage).optional(),
   status: z.nativeEnum(LeadStatus).optional(),
-  assignedToId: z.string().uuid().optional(),
+  assignedToId: z.uuid().optional(),
 });
 
 export type EditLeadRequest = z.infer<typeof editLeadSchema>;

@@ -1,5 +1,6 @@
-import { ActivityType, Lead } from "@/generated/prisma/client";
+import { ActivityType } from "@/generated/prisma/client";
 import { CreateActivityRequest } from "../activity";
+import { LeadDetail } from "./schema";
 
 
 // This function checks what changed in a lead
@@ -10,8 +11,8 @@ import { CreateActivityRequest } from "../activity";
 interface BuildLeadChangeActivitiesParams {
   leadId: string;
   actorId: string;
-  existingLead: Lead;
-  newLead: Partial<Lead>;
+  existingLead: LeadDetail;
+  newLead: Partial<LeadDetail>;
 }
 
 export function buildLeadChangeActivities({
@@ -42,6 +43,19 @@ export function buildLeadChangeActivities({
       meta: {
         from: existingLead.stage,
         to: newLead.stage,
+      },
+    });
+  }
+
+
+  if(newLead.assignedToId && newLead.assignedToId !== existingLead.assignedToId){
+    activities.push({
+      leadId,
+      actorId,
+      type: ActivityType.ASSIGNMENT_CHANGE,
+      meta: {
+        from: existingLead.assignedTo?.name ?? "Unassigned",
+        to: newLead.assignedTo?.name ?? "Unassigned",
       },
     });
   }

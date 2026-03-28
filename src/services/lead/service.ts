@@ -2,7 +2,7 @@ import { ActivityType, Prisma, Profile, Role } from "@/generated/prisma/client";
 import { CreateLeadRequest, EditLeadRequest, ListLeadsParams } from "./schema";
 import { dbCreateLead, dbGetLeadById, dbListLeads, dbUpdateLead } from "./db";
 import { buildLeadChangeActivities } from "./helpers";
-import { canEditLeadContactFields } from "./permissions";
+import { canEditLeadAssignment, canEditLeadContactFields } from "./permissions";
 import { ActivityService } from "../activity";
 import { prisma } from "@/lib/prisma";
 
@@ -92,6 +92,10 @@ export async function updateLead(
   if (!canEditLeadContactFields(profile.role, data)) {
     throw new LeadServiceError("Unauthorized", 403);
   }
+
+  if (!canEditLeadAssignment(profile.role, data)) {
+  throw new LeadServiceError("Unauthorized", 403);
+}
 
   const activities = buildLeadChangeActivities({
     leadId: id,

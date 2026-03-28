@@ -4,7 +4,7 @@
 import { useState } from "react";
 
 import { LeadStage, LeadStatus } from "@/generated/prisma/enums";
-import { Role } from "@/generated/prisma/client";
+import { Profile, Role } from "@/generated/prisma/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,14 @@ import {
   StageBadge,
   StatusBadge,
 } from "@/components/leads/reusable";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { LeadDetail } from "@/services/lead/schema";
 
 const leadStatuses = [LeadStatus.OPEN, LeadStatus.WON, LeadStatus.LOST];
@@ -30,7 +38,7 @@ function getFieldClassName() {
   return "h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50";
 }
 
-export function Overview({ data, role }: { data: LeadDetail, role: Role }) {
+export function Overview({ data, role, users }: { data: LeadDetail, role: Role, users: Profile[] }) {
   const editLead = useEditLead(data.id);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -43,6 +51,7 @@ export function Overview({ data, role }: { data: LeadDetail, role: Role }) {
     assignedToId: string;
   } | null>(null);
   const [error, setError] = useState("");
+  const selectedAssignedToId = draft?.assignedToId ?? data.assignedToId;
 
   async function handleSave() {
     if (!data || !draft) {
@@ -316,11 +325,28 @@ export function Overview({ data, role }: { data: LeadDetail, role: Role }) {
               <p className="text-sm text-muted-foreground">Unassigned</p>
             )}
 
-            {isManagerOrAdmin ? (
-              <p className="text-sm text-muted-foreground">
-                Assignment changes will be built in Session 3.
-              </p>
-            ) : null}
+            {isManagerOrAdmin && isEditing ? (
+            <Select
+              value={selectedAssignedToId ?? undefined}
+              onValueChange={(value) =>
+                setDraft((currentDraft) => ({
+                  ...currentDraft!,
+                  assignedToId: value,
+                }))
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select an agent" />
+              </SelectTrigger>
+              <SelectContent>
+                {users.map((user) => (
+                  <SelectItem key={user.id} value={user.id}>
+                    {user.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : null}
           </CardContent>
         </Card>
 
