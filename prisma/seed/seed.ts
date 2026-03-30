@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import supabaseAdmin from "@/lib/supabase/admin";
 
+
+
+
 const main = async () => {
   const { data, error } = await supabaseAdmin.auth.admin.createUser({
     email: "admin@crm.com",
@@ -12,6 +15,7 @@ const main = async () => {
     console.error("Error creating admin user:", error);
     throw error;
   }
+
 
   console.log(`Admin user created: ${data.user.id}`);
 
@@ -30,3 +34,5 @@ const main = async () => {
 main().catch((e) => {
   console.error(e);
 });
+
+

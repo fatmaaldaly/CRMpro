@@ -12,6 +12,7 @@ import {
   formatRoleLabel,
   getProtectedPageMeta,
 } from "@/components/app-shell-config";
+import  NotificationBell  from "./notification-icon";
 
 export function AppShell({
   role,
@@ -45,9 +46,10 @@ export function AppShell({
         </div>
 
         <p className="hidden text-sm text-slate-500 md:block">{email}</p>
+        <NotificationBell />
       </header>
 
       <div className="flex flex-1 flex-col">{children}</div>
     </SidebarInset>
   );
-}
+};

@@ -9,6 +9,7 @@ import { Overview } from "./lead-details/Overview";
 import { Timeline } from "./lead-details/Timeline";
 import { AddNoteDialog } from "./lead-details/AddNoteDialog";
 import LogCallDialog from "./lead-details/LogCallDialog";
+import Reminders from "./lead-details/Reminders";
 
 export function LeadDetailClient({
   id,
@@ -76,7 +77,7 @@ export function LeadDetailClient({
         <TabsContent value="reminders">
           <Card>
             <CardContent className="py-8 text-sm text-muted-foreground">
-              Reminders will be built in a later session.
+              <Reminders leadId={id} params={{ page: 1, pageSize: 10 }} />
             </CardContent>
           </Card>
         </TabsContent>

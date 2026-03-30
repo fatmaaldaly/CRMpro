@@ -1,9 +1,10 @@
 import type React from "react";
 
-import { LeadStage, LeadStatus } from "@/generated/prisma/enums";
+import { LeadStage, LeadStatus, ReminderStatus } from "@/generated/prisma/enums";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "../ui/button";
 import { Dispatch, SetStateAction } from "react";
+import { Button } from "../ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const statusVariantMap: Record<
   LeadStatus,
@@ -12,6 +13,15 @@ const statusVariantMap: Record<
   OPEN: "info",
   WON: "success",
   LOST: "warning",
+};
+
+const reminderStatusVariantMap: Record<
+  ReminderStatus,
+  React.ComponentProps<typeof Badge>["variant"]
+> = {
+  PENDING: "info",
+  FIRED: "success",
+  CANCELLED: "warning",
 };
 
 const stageVariantMap: Record<
@@ -46,16 +56,52 @@ export function StatusBadge({ status }: { status: LeadStatus }) {
   );
 }
 
-export function StageBadge({ stage }: { stage: LeadStage }) {
-  return <Badge variant={stageVariantMap[stage]}>{formatEnumLabel(stage)}</Badge>;
+export function ReminderStatusBadge({ status }: { status: ReminderStatus }) {
+  return (
+    <Badge variant={reminderStatusVariantMap[status]}>
+      {formatEnumLabel(status)}
+    </Badge>
+  );
 }
 
-export function Pagination({ startItem, endItem, total, page, pageCount, isLoading, setPage }: { startItem: number, endItem: number, total: number, page: number, pageCount: number, isLoading: boolean, setPage: Dispatch<SetStateAction<number>> }) {
+export function StageBadge({ stage }: { stage: LeadStage }) {
+  return (
+    <Badge variant={stageVariantMap[stage]}>{formatEnumLabel(stage)}</Badge>
+  );
+}
+
+export function Pagination({
+  startItem,
+  endItem,
+  total,
+  page,
+  pageCount,
+  isLoading,
+  setPage,
+  itemLabel = "leads",
+  inSmallSpace = false,
+}: {
+  startItem: number;
+  endItem: number;
+  total: number;
+  page: number;
+  pageCount: number;
+  isLoading: boolean;
+  setPage: Dispatch<SetStateAction<number>>;
+  itemLabel?: string;
+  inSmallSpace?: boolean;
+}) {
   return (
     <div className="flex flex-col gap-3 border-t border-slate-200 bg-slate-50/70 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="text-sm text-slate-500">
-        Showing {startItem}-{endItem} of {total} leads
-      </div>
+      {inSmallSpace ? (
+        <div className="text-xs text-slate-500">
+          {startItem}-{endItem} of {total}
+        </div>
+      ) : (
+        <div className="text-sm text-slate-500">
+          Showing {startItem}-{endItem} of {total} {itemLabel}
+        </div>
+      )}
 
       <div className="flex items-center gap-2">
         <Button
@@ -66,7 +112,7 @@ export function Pagination({ startItem, endItem, total, page, pageCount, isLoadi
           }
           disabled={isLoading || page <= 1}
         >
-          Previous
+          {inSmallSpace ? <ChevronLeft /> : "Previous"}
         </Button>
         <div className="text-sm text-slate-500">
           Page {page} of {Math.max(pageCount, 1)}
@@ -80,9 +126,9 @@ export function Pagination({ startItem, endItem, total, page, pageCount, isLoadi
           }
           disabled={isLoading || page >= Math.max(pageCount, 1)}
         >
-          Next
+          {inSmallSpace ? <ChevronRight /> : "Next"}
         </Button>
       </div>
     </div>
-  )
+  );
 }
