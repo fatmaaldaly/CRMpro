@@ -94,22 +94,30 @@ export default function LogCallDialog({ leadId }: { leadId: string }) {
       }
     }
 
-    async function handleCreateReminder() {
-      if (!callFollowUp) return;
-      setError("");
-      try {
-        await createReminder.mutateAsync({
-          leadId,
-          title: callFollowUp.suggestedReminder.title,
-          note: callFollowUp.suggestedReminder.note,
-          dueAt: callFollowUp.suggestedReminder.suggestedDueAt,
-        });
-        setOpen(false);
-        resetForm();
-      } catch (mutationError) {
-        setError(getApiErrorMessage(mutationError, "Failed to create reminder"));
-      }
-    }
+
+  function handleCreateReminder() {
+    const followup = generateCallFollowup.data;
+    if (!followup) return;
+
+    setError("");
+    createReminder.mutate(
+      {
+        leadId,
+        title: followup.suggestedReminder.title,
+        note: followup.suggestedReminder.note,
+        dueAt: new Date(followup.suggestedReminder.suggestedDueAt),
+      },
+      {
+        onSuccess: () => {
+          handleOpenChange(false);
+        },
+        onError: (err) => {
+          setError(getApiErrorMessage(err, "Failed to create reminder"));
+        },
+      },
+    );
+  }
+
 
     function handleDiscard() {
       setOpen(false);
@@ -124,7 +132,7 @@ export default function LogCallDialog({ leadId }: { leadId: string }) {
           Log Call
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="w-full max-w-lg p-0 max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {step === "log" && "Log Call"}
@@ -134,7 +142,7 @@ export default function LogCallDialog({ leadId }: { leadId: string }) {
         </DialogHeader>
 
         {step === "log" && (
-          <form onSubmit={handleSubmit} className="space-y-4 px-6 py-5">
+          <form onSubmit={handleSubmit} className="space-y-4 px-6 py-6">
             <div className="space-y-2">
               <Label htmlFor="outcome">Outcome</Label>
               <Select
@@ -147,11 +155,11 @@ export default function LogCallDialog({ leadId }: { leadId: string }) {
                   <SelectValue placeholder="Answered" />
               </SelectTrigger>
               <SelectContent>
-                  <SelectItem value="ANSWERED">ANSWERED</SelectItem>
-                  <SelectItem value="NO_ANSWER">NO_ANSWER</SelectItem>
-                  <SelectItem value="WRONG_NUMBER">WRONG_NUMBER</SelectItem>
-                  <SelectItem value="BUSY">BUSY</SelectItem>
-                  <SelectItem value="CALL_BACK_LATER">CALL_BACK_LATER</SelectItem>
+                  <SelectItem value="ANSWERED">Answered</SelectItem>
+                  <SelectItem value="NO_ANSWER">No Answer</SelectItem>
+                  <SelectItem value="WRONG_NUMBER">Wrong Number</SelectItem>
+                  <SelectItem value="BUSY">Busy</SelectItem>
+                  <SelectItem value="CALL_BACK_LATER">Call Back Later</SelectItem>
               </SelectContent>
               </Select>
               </div>

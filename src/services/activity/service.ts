@@ -1,10 +1,12 @@
 import { Prisma, Role } from "@/generated/prisma/client";
-import { dbCreateActivities, dbGetLeadActivities } from "./db";
+import { dbCreateActivities, dbGetLeadActivities, dbCreateAIActivity } from "./db";
 import { buildActivityContent } from "./helpers";
 import {
   CreateActivityRequest,
   createManyActivitiesSchema,
   GetLeadActivitiesRequest,
+  CreateAIActivityRequest,
+  createAIActivitySchema,
 } from "./schema";
 import { buildPagination } from "@/utils/pagination";
 import { UserSnapshot } from "@/utils/types/user";
@@ -72,3 +74,19 @@ export async function getLeadActivities(
 
 
 
+export async function createAIActivity(request: CreateAIActivityRequest) {
+  const validated = createAIActivitySchema.safeParse(request);
+  if (!validated.success) {
+    return {
+      success: false as const,
+      errors: validated.error.flatten().fieldErrors,
+    };
+  }
+
+  const activity = await dbCreateAIActivity(validated.data);
+
+  return {
+    success: true as const,
+    activity,
+  };
+}

@@ -8,14 +8,14 @@ export const leadBriefSchema = z.object({
       "A brief summary of the lead's situation based on activity history.",
     ),
   keyFacts: z
-    .array(z.string().max(200))
+    .array(z.string().max(100))
     .min(2)
     .max(5)
     .describe(
       "2-5 bullet points about the lead (stage, activity pattern, engagement level, etc.)",
     ),
   risks: z
-    .array(z.string().max(200))
+    .array(z.string().max(100))
     .max(3)
     .describe("up to 3 risks the lead is facing or objections"),
   nextActions: z
@@ -72,10 +72,7 @@ export const callFollowUpSchema = z.object({
   suggestedReminder: z.object({
     title: z.string().describe("Short, actionable reminder title"),
     note: z.string().describe("Context for the reminder"),
-        suggestedDueAt: z.string().describe("Suggested due date in ISO format"),
-    // suggestedDueAt: z.coerce
-    //   .date()
-    //   .describe("Suggested due date in ISO format"),
+    suggestedDueAt: z.string().describe("Suggested due date in ISO format"),
   }),
 });
 
@@ -85,7 +82,6 @@ export const generateLeadBriefSchema = z.object({
   leadId: z.uuid(),
 });
 
-// saveLeadBriefSchema validates that the brief matches the leadBriefSchema
 export const saveLeadBriefSchema = z.object({
   leadId: z.uuid(),
   brief: leadBriefSchema,
@@ -93,9 +89,7 @@ export const saveLeadBriefSchema = z.object({
 
 export type SaveLeadBriefRequest = z.infer<typeof saveLeadBriefSchema>;
 
-
-
-export const generateCallFollowUpSchema = z.object({
+export const generateCallFollowUpRequestSchema = z.object({
   leadId: z.uuid(),
   callOutcome: z.enum([
     "NO_ANSWER",
@@ -107,10 +101,4 @@ export const generateCallFollowUpSchema = z.object({
   agentNotes: z.string().trim().max(5000).optional(),
 });
 
-
-export const saveCallFollowupSchema = z.object({
-  leadId: z.uuid(),
-  callFollowup: callFollowUpSchema,
-});
-
-export type SaveCallFollowupRequest = z.infer<typeof saveCallFollowupSchema>;
+export type GenerateCallFollowUpRequest = z.infer<typeof generateCallFollowUpRequestSchema>;

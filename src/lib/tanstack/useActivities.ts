@@ -3,7 +3,7 @@ import {
   GetLeadActivitiesRequest,
   ListLeadActivitiesResponseData,
 } from "@/services/activity/schema";
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 
 export function useGetLeadActivities(request: GetLeadActivitiesRequest) {
@@ -18,18 +18,17 @@ export function useGetLeadActivities(request: GetLeadActivitiesRequest) {
       });
 
       return data.data;
-      console.log("fetching activities...");
     },
   });
 }
 
-
 export function useCreateNote(leadId: string) {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (content: string) => {
-      const { data } = await api.post(`/leads/${leadId}/activities`, {
-       content,
+      const { data } = await api.post(`/leads/${leadId}/activities/note`, {
+        content,
       });
       return data.data;
     },
@@ -39,13 +38,16 @@ export function useCreateNote(leadId: string) {
   });
 }
 
-
 export function useLogCallAttempt(leadId: string) {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: async (data: CreateCallAttemptRequest) => {
-      const response = await api.post(`/leads/${leadId}/activities/call-attempt`, data);
-      return response.data.data;
+    mutationFn: async (payload: CreateCallAttemptRequest) => {
+      const { data } = await api.post(
+        `/leads/${leadId}/activities/call-attempt`,
+        payload,
+      );
+      return data.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["activities"] });

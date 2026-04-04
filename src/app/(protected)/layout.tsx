@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma"
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import { QueryProvider } from "@/providers/query-provider"
 import { redirect } from "next/navigation"
+import { Toaster } from "@/components/ui/sonner"
 
 export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
   // Check authentication
@@ -31,6 +32,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
         <AppShell role={profile.role} email={profile.email}>
           {children}
         </AppShell>
+        <Toaster />
       </SidebarProvider>
     </QueryProvider>
 

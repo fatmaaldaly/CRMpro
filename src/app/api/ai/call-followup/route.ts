@@ -1,43 +1,26 @@
 import { AISchema, AIService } from "@/services/ai";
 import { authenticateUser } from "@/utils/authenticateUser";
+import { handleRouteError } from "@/utils/handleRouteError";
 import { NextRequest, NextResponse } from "next/server";
 
+export async function POST(req: NextRequest) {
+  try {
+    const profile = await authenticateUser();
+    const body = await req.json();
 
-export async function POST(req: NextRequest){
-    try{
-      //authenticate
-      const profile = await authenticateUser();
-      const body = await req.json();
-      
+    const { leadId, callOutcome, agentNotes } =
+      AISchema.generateCallFollowup.parse(body);
 
-      // validate Parse with generateCallFollowUpRequestSchema
-      const {leadId} = AISchema.generateCallFollowup.parse(body);
+    const followup = await AIService.generateCallFollowup(
+      leadId,
+      callOutcome,
+      agentNotes,
+      profile,
+    );
 
-      // call service
-    //   const brief = await AIService.generateCallFollowup({
-    //   leadId,
-    //   callOutCome: body.callOutCome,
-    //   agentNotes: body.agentNotes,
-    //   actorId: profile.id, 
-    // });
-
-    const brief = await AIService.generateCallFollowup({
-  leadId,
-  callOutCome: body.callOutCome,
-  agentNotes: body.agentNotes,
-  actorId: profile.id,
-  userSnapshot: {
-    id: profile.id,
-    // name: profile.name,   
-    role: profile.role,
-  },
-});
-
-    return NextResponse.json({success: true, data: brief});
-    }catch(error){
-        console.error("AI CALL FOLLOWUP ROUTE ERROR:", error);
-        return NextResponse.json({success: false, error: (error as Error).message}, {status: 500});
-    }
-           
-    
+    return NextResponse.json({ success: true, data: followup });
+  } catch (error) {
+    console.error(error);
+    return handleRouteError(error);
+  }
 }
