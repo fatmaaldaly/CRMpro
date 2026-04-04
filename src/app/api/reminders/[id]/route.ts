@@ -1,37 +1,37 @@
-import { NextRequest, NextResponse } from "next/server";
-import { handleRouteError } from "@/utils/handleRouteError";
-import { updateReminderSchema } from "@/services/reminder/schema";
+import { ReminderSchema, ReminderService } from "@/services/reminder";
 import { authenticateUser } from "@/utils/authenticateUser";
-import { updateReminder } from "@/services/reminder/service";
-import { reminderIdSchema } from "@/services/reminder/schema";
-
+import { handleRouteError } from "@/utils/handleRouteError";
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    // Authenticate the user
     const profile = await authenticateUser();
-    const { id } = reminderIdSchema.parse(await params);
+    const { id } = z.object({ id: z.uuid() }).parse(await params);
     const body = await request.json();
-    const data = updateReminderSchema.parse(body);
+    const data = ReminderSchema.update.parse(body);
 
-    // Validate reminder exists
-    // Check authorization (assigned user / manager / admin)
-    // Cancel QStash scheduled message
-    // Update status in DB
-    // All handled inside cancelReminder service
-    
-    // Update status (CANCELLED or FIRED)
-    const reminder = await updateReminder(id, { status: data.status }, {
-      id: profile.id,
-      role: profile.role,
-    });
+    if (data.status === "CANCELLED") {
+      const result = await ReminderService.cancel(id, {
+        id: profile.id,
+        role: profile.role,
+      });
+      return NextResponse.json({ success: true, data: result });
+    }
 
-    return NextResponse.json({ success: true, data: reminder });
+    if (data.status === "COMPLETED") {
+      const result = await ReminderService.complete(id, {
+        id: profile.id,
+        role: profile.role,
+      });
+      return NextResponse.json({ success: true, data: result });
+    }
+
+    return NextResponse.json({ error: "Invalid operation" }, { status: 400 });
   } catch (error) {
-    console.error("Error updating reminder", error);
     return handleRouteError(error);
   }
 }

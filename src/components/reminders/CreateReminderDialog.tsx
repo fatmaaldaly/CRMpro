@@ -2,13 +2,13 @@
 
 import { FormEvent, useState } from "react";
 import { useCreateLeadReminder } from "@/lib/tanstack/useReminders";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "../../ui/dialog";
-import { Button } from "../../ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "../ui/dialog";
+import { Button } from "../ui/button";
 import { getApiErrorMessage } from "@/lib/get-api-error-message";
 import { Label } from "@/components/ui/label";
 
 
-export default function CreateReminderDialog({ leadId}: { leadId: string; params: { page: number; pageSize: number; status?: string } }) {
+export default function CreateReminderDialog({ leadId }: { leadId: string }) {
     const [open, setOpen] = useState(false);
     const [title, setTitle] = useState("");
     const [dueDate, setDueDate] = useState("");

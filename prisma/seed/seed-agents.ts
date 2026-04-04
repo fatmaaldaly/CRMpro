@@ -31,6 +31,20 @@ const main = async () => {
   ];
 
   for (const agent of agents) {
+    // Check if profile already exists in Prisma
+    const existingProfile = await prisma.profile.findFirst({
+      where: { email: agent.email },
+    });
+
+    if (existingProfile) {
+      console.log(
+        `Agent profile already exists: ${existingProfile.id} (${agent.email})`,
+      );
+      continue;
+    }
+
+    // Try to create Supabase user, or get existing user if email already exists
+    let userId: string;
     const { data, error } = await supabaseAdmin.auth.admin.createUser({
       email: agent.email,
       password: agent.password,
@@ -38,20 +52,42 @@ const main = async () => {
     });
 
     if (error) {
-      console.error("Error creating agent user:", error);
-      throw error;
+      if (error.code === "email_exists") {
+        // User already exists in Supabase, get their ID
+        const { data: users, error: listError } =
+          await supabaseAdmin.auth.admin.listUsers();
+        if (listError) {
+          console.error("Error listing users:", listError);
+          throw listError;
+        }
+        const existingUser = users?.users.find((u) => u.email === agent.email);
+        if (!existingUser) {
+          console.error(`Could not find existing user for ${agent.email}`);
+          throw new Error(`User exists but not found: ${agent.email}`);
+        }
+        userId = existingUser.id;
+        console.log(
+          `Agent user already exists in Supabase: ${userId} (${agent.email})`,
+        );
+      } else {
+        console.error("Error creating agent user:", error);
+        throw error;
+      }
+    } else {
+      userId = data.user.id;
+      console.log(`Agent user created: ${userId}`);
     }
 
-    console.log(`Agent user created: ${data.user.id}`);
-
+    // Create profile in Prisma
     const admin = await prisma.profile.create({
       data: {
-        id: data.user.id,
+        id: userId,
         email: agent.email,
         name: agent.name,
         role: "AGENT",
       },
     });
+    console.log(`Agent profile created: ${admin.id}`);
   }
 
   console.log(`Agents created: ${agents.length}`);

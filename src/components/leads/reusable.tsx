@@ -1,6 +1,6 @@
 import type React from "react";
 
-import { LeadStage, LeadStatus, ReminderStatus } from "@/generated/prisma/enums";
+import { LeadStage, LeadStatus } from "@/generated/prisma/enums";
 import { Badge } from "@/components/ui/badge";
 import { Dispatch, SetStateAction } from "react";
 import { Button } from "../ui/button";
@@ -15,15 +15,6 @@ const statusVariantMap: Record<
   LOST: "warning",
 };
 
-const reminderStatusVariantMap: Record<
-  ReminderStatus,
-  React.ComponentProps<typeof Badge>["variant"]
-> = {
-  PENDING: "info",
-  FIRED: "success",
-  CANCELLED: "warning",
-};
-
 const stageVariantMap: Record<
   LeadStage,
   React.ComponentProps<typeof Badge>["variant"]
@@ -33,6 +24,8 @@ const stageVariantMap: Record<
   QUALIFIED: "info",
   NEGOTIATING: "warning",
 };
+
+const label = "leads";
 
 export function formatEnumLabel(value: string) {
   return value
@@ -56,14 +49,6 @@ export function StatusBadge({ status }: { status: LeadStatus }) {
   );
 }
 
-export function ReminderStatusBadge({ status }: { status: ReminderStatus }) {
-  return (
-    <Badge variant={reminderStatusVariantMap[status]}>
-      {formatEnumLabel(status)}
-    </Badge>
-  );
-}
-
 export function StageBadge({ stage }: { stage: LeadStage }) {
   return (
     <Badge variant={stageVariantMap[stage]}>{formatEnumLabel(stage)}</Badge>
@@ -78,7 +63,7 @@ export function Pagination({
   pageCount,
   isLoading,
   setPage,
-  itemLabel = "leads",
+  itemLabel = label,
   inSmallSpace = false,
 }: {
   startItem: number;

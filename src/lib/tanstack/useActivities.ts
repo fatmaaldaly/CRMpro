@@ -18,6 +18,7 @@ export function useGetLeadActivities(request: GetLeadActivitiesRequest) {
       });
 
       return data.data;
+      console.log("fetching activities...");
     },
   });
 }

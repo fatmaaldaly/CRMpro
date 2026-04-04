@@ -9,7 +9,8 @@ import { Overview } from "./lead-details/Overview";
 import { Timeline } from "./lead-details/Timeline";
 import { AddNoteDialog } from "./lead-details/AddNoteDialog";
 import LogCallDialog from "./lead-details/LogCallDialog";
-import Reminders from "./lead-details/Reminders";
+import {Reminders}from "./lead-details/Reminders";
+import { AI } from "./lead-details/AI";
 
 export function LeadDetailClient({
   id,
@@ -63,6 +64,7 @@ export function LeadDetailClient({
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="timeline">Timeline</TabsTrigger>
           <TabsTrigger value="reminders">Reminders</TabsTrigger>
+          <TabsTrigger value="ai">AI</TabsTrigger>
           <TabsTrigger value="files">Files</TabsTrigger>
         </TabsList>
 
@@ -77,7 +79,15 @@ export function LeadDetailClient({
         <TabsContent value="reminders">
           <Card>
             <CardContent className="py-8 text-sm text-muted-foreground">
-              <Reminders leadId={id} params={{ page: 1, pageSize: 10 }} />
+              <Reminders leadId={id}/>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="ai">
+          <Card>
+            <CardContent className="py-8 text-sm text-muted-foreground">
+             <AI leadId={id}/>
             </CardContent>
           </Card>
         </TabsContent>

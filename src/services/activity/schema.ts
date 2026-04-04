@@ -88,7 +88,7 @@ export const createNoteSchema = z.object({
 export type CreateNoteRequest = z.infer<typeof createNoteSchema>;
 
 
-const callOutcomeEnum = z.enum([
+export const callOutcomeEnum = z.enum([
   "NO_ANSWER",
   "ANSWERED",
   "WRONG_NUMBER",
@@ -96,9 +96,25 @@ const callOutcomeEnum = z.enum([
   "CALL_BACK_LATER",
 ]);
 
+export type CallOutcome = z.infer<typeof callOutcomeEnum>;
+
 export const createCallAttemptSchema = z.object({
   outcome: callOutcomeEnum,
   notes: z.string().max(5000).optional(),
 });
 
 export type CreateCallAttemptRequest = z.infer<typeof createCallAttemptSchema>;
+
+
+
+export const createAIActivitySchema = z.object({
+  type: z.enum([
+    ActivityType.AI_LEAD_BRIEF_GENERATED,
+    ActivityType.AI_FOLLOWUP_DRAFT_GENERATED,
+  ]),
+  leadId: z.uuid(),
+  actorId: z.uuid(),
+  content: z.string().min(1),
+});
+
+export type CreateAIActivityRequest = z.infer<typeof createAIActivitySchema>;

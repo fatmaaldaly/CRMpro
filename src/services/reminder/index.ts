@@ -1,5 +1,5 @@
 import { createReminderSchema, listLeadRemindersSchema, listMyRemindersSchema, qstashReminderDueSchema, updateReminderSchema } from "./schema";
-import { createReminder, fireReminder, listLeadReminders, listMyReminders, cancelReminder } from "./service";
+import { createReminder, fireReminder, listLeadReminders, listMyReminders, cancelReminder, completeReminder } from "./service";
 
 export const ReminderService = {
   create: createReminder,
@@ -7,6 +7,7 @@ export const ReminderService = {
   listByLead: listLeadReminders,
   listMy: listMyReminders,
   cancel: cancelReminder,
+  complete: completeReminder,
 } as const;
 
 export const ReminderSchema = {

@@ -1,5 +1,5 @@
 import { UserSnapshot } from "@/utils/types/user";
-import { CreateReminderRequest, ListLeadRemindersRequest, ListMyRemindersRequest, UpdateReminderRequest} from "./schema";
+import { CreateReminderRequest, ListLeadRemindersRequest, ListMyRemindersRequest } from "./schema";
 import {
   dbCreateReminder,
   dbGetLeadAssignedTo,
@@ -8,7 +8,7 @@ import {
   dbUpdateReminderStatus,
   dbGetLeadReminders,
   dbGetReminderById,
-  dbUpdateReminder,
+  dbCompleteReminder,
 } from "./db";
 import { qstash, reminderCallbackUrl } from "@/lib/qstash";
 import { prisma } from "@/lib/prisma";
@@ -17,7 +17,6 @@ import { redis } from "@/lib/redis";
 import { NotificationService } from "../notification";
 import { buildPagination } from "@/utils/pagination";
 import { Role, Prisma } from "@/generated/prisma/client";
-
 
 export const createReminder = async (
   request: CreateReminderRequest,
@@ -142,9 +141,6 @@ export const listMyReminders = async (
 
   if (userSnapshot.role === Role.AGENT) {
     where.assignedToId = userSnapshot.id;
-  } else if (request.assignedToId) {
-    // Managers/admins can optionally filter by specific agent
-    where.assignedToId = request.assignedToId;
   }
 
   if (request.status) {
@@ -160,6 +156,35 @@ export const listMyReminders = async (
     reminders: result.reminders,
     pagination: buildPagination(result.total, request.page, request.pageSize),
   };
+};
+
+export const completeReminder = async (
+  reminderId: string,
+  userSnapshot: UserSnapshot,
+) => {
+  const reminder = await dbGetReminderById(reminderId);
+  if (!reminder) {
+    throw new Error("Reminder not found");
+  }
+
+  if (reminder.status !== "PENDING" && reminder.status !== "FIRED") {
+    throw new Error("Only pending or fired reminders can be completed");
+  }
+
+  if (!validateLeadAccess(reminder.assignedToId, userSnapshot)) {
+    throw new Error("You are not authorized to complete this reminder");
+  }
+
+  // If PENDING, cancel the QStash message to prevent the webhook from firing
+  if (reminder.status === "PENDING" && reminder.qstashMessageId) {
+    try {
+      await qstash.messages.delete(reminder.qstashMessageId);
+    } catch {
+      // QStash message may have already been delivered or expired
+    }
+  }
+
+  return dbCompleteReminder(reminderId);
 };
 
 export const cancelReminder = async (
@@ -189,44 +214,4 @@ export const cancelReminder = async (
   }
 
   return dbUpdateReminderStatus(reminderId, "CANCELLED");
-};
-
-
-export const updateReminder = async (
-  id: string,
-  request: UpdateReminderRequest,
-  user: UserSnapshot
-) => {
-  // 1. Get reminder
-  const reminder = await dbGetReminderById(id);
-  if (!reminder) throw new Error("Reminder not found");
-
-  // 2. Authorization
-  const canAccess =
-    reminder.assignedToId === user.id ||
-    user.role === "MANAGER" ||
-    user.role === "ADMIN";
-
-  if (!canAccess) {
-    throw new Error("Not authorized");
-  }
-
-  // 3. Allow updating status to CANCELLED or FIRED
-  if (request.status === "CANCELLED" || request.status === "FIRED") {
-    // 4. Cancel scheduled QStash job if pending
-    if (reminder.qstashMessageId) {
-      try {
-        await qstash.messages.delete(reminder.qstashMessageId);
-      } catch {
-        // already delivered, expired, etc.
-      }
-    }
-
-    // 5. Update DB
-    return dbUpdateReminder(id, {
-      status: request.status,
-    });
-  }
-
-  throw new Error("Invalid status update");
 };

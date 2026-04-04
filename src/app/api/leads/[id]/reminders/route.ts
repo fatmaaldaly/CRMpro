@@ -41,7 +41,6 @@ export async function POST(
     const profile = await authenticateUser();
     const { id } = leadIdParamsSchema.parse(await params);
     const body = await request.json();
-    console.log("Incoming body:", body);
     const data = ReminderSchema.create.parse(body);
 
     const reminder = await ReminderService.create(

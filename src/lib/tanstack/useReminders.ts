@@ -1,9 +1,8 @@
-import { CreateReminderRequest} from "@/services/reminder/schema";
+import { CreateReminderRequest } from "@/services/reminder/schema";
 import { api } from "../api";
 import { Reminder } from "@/generated/prisma/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PaginationMeta } from "@/utils/pagination";
-
 
 interface ReminderWithRelations extends Reminder {
   lead: { id: string; name: string };
@@ -39,7 +38,6 @@ export function useGetLeadReminders(
       const { data } = await api.get(`/leads/${leadId}/reminders`, { params });
       return data.data;
     },
-    enabled: Boolean(leadId),
   });
 }
 
@@ -73,18 +71,16 @@ export function useCancelReminder() {
   });
 }
 
-
-export function useUpdateReminder() {
+export function useCompleteReminder() {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: async (params: { reminderId: string; status: string }): Promise<Reminder> => {
-      const { reminderId, status } = params;
-      const { data } = await api.patch(`/reminders/${reminderId}`, { status });
+    mutationFn: async (reminderId: string) => {
+      const { data } = await api.patch(`/reminders/${reminderId}`, {
+        status: "COMPLETED",
+      });
       return data.data;
     },
     onSuccess: () => {
-      // Invalidate both lead-specific and general reminders
       queryClient.invalidateQueries({ queryKey: ["lead-reminders"] });
       queryClient.invalidateQueries({ queryKey: ["reminders"] });
     },

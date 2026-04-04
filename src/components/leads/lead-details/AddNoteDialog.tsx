@@ -94,7 +94,7 @@ export function AddNoteDialog({ leadId }: { leadId: string }) {
                   Cancel
                 </Button>
                 <Button type="submit" disabled={createNote.isPending}>
-                  {createNote.isPending ? "Adding..." : "Save Note"}
+                  {createNote.isPending ? "Saving..." : "Save Note"}
                 </Button>
               </DialogFooter>
             </form>

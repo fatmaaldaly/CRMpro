@@ -1,6 +1,6 @@
 
 import React from 'react'
-import Reminders from '@/components/leads/lead-details/Reminders'
+import { RemindersPageClient } from '@/components/reminders/reminders-page-client';
 
 export default function RemindersPage() {
   return (
@@ -11,7 +11,7 @@ export default function RemindersPage() {
         </h1>
       </div>
 
-      <Reminders params={{ page: 1, pageSize: 10 }} />
+      <RemindersPageClient />
     </div>
   )
 };

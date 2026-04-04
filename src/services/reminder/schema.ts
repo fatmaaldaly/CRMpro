@@ -34,13 +34,12 @@ export const listMyRemindersSchema = z.object({
   page: z.coerce.number().min(1).default(1),
   pageSize: z.coerce.number().min(1).max(100).default(10),
   status: z.nativeEnum(ReminderStatus).optional(),
-  assignedToId: z.string().uuid().optional(),
 });
 
 export type ListMyRemindersRequest = z.infer<typeof listMyRemindersSchema>;
 
 export const updateReminderSchema = z.object({
-  status: z.enum(["CANCELLED", "FIRED"]),
+  status: z.enum(["CANCELLED", "COMPLETED"]),
 });
 
 export type UpdateReminderRequest = z.infer<typeof updateReminderSchema>;

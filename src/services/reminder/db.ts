@@ -91,11 +91,23 @@ export const dbGetLeadReminders = async (
       skip: (params.page - 1) * params.pageSize,
       include: {
         lead: { select: { id: true, name: true } },
+        assignedTo: { select: { id: true, name: true } },
       },
     }),
     prisma.reminder.count({ where }),
   ]);
   return { reminders, total };
+};
+
+export const dbCompleteReminder = async (
+  reminderId: string,
+  tx?: Prisma.TransactionClient,
+) => {
+  const client = tx ?? prisma;
+  return client.reminder.update({
+    where: { id: reminderId },
+    data: { status: "COMPLETED" },
+  });
 };
 
 export const dbGetReminderById = async (reminderId: string) => {
@@ -105,18 +117,5 @@ export const dbGetReminderById = async (reminderId: string) => {
       lead: { select: { id: true, name: true } },
       assignedTo: { select: { id: true, name: true } },
     },
-  });
-};
-
-
-export const dbUpdateReminder = async (
-  reminderId: string,
-  data: Prisma.ReminderUpdateInput,
-  tx?: Prisma.TransactionClient,
-) => {
-  const client = tx ?? prisma;
-  return client.reminder.update({ 
-    where: { id: reminderId },
-    data,
   });
 };

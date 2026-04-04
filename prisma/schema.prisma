@@ -27,6 +27,7 @@ model Profile {
   activities    Activity[]
   reminders     Reminder[]
   notifications Notification[]
+  aileadBriefs  AILeadBrief[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -54,6 +55,7 @@ model Lead {
   activities    Activity[]
   reminders     Reminder[]
   notifications Notification[]
+  aileadBriefs  AILeadBrief[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -127,6 +129,7 @@ enum ReminderStatus {
   PENDING
   FIRED
   CANCELLED
+  COMPLETED
 }
 
 // Notifications
@@ -151,4 +154,19 @@ model Notification {
 enum NotificationReadState {
   UNREAD
   READ
+}
+
+model AILeadBrief {
+  id String @id @default(uuid())
+
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id])
+
+  brief Json
+
+  createdById String
+  createdBy   Profile @relation(fields: [createdById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

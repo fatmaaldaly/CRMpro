@@ -10,6 +10,7 @@ import { Pagination } from "../reusable";
 
 export const Timeline = ({ leadId }: { leadId: string }) => {
   const [page, setPage] = useState(1);
+  const label = "activities";
   const pageSize = 10;
   const { data, isLoading, isError, error } = useGetLeadActivities({
     leadId,
@@ -71,7 +72,7 @@ export const Timeline = ({ leadId }: { leadId: string }) => {
       )
     })}
 
-    <Pagination startItem={startItem} endItem={endItem} total={total} page={page} pageCount={pageCount} isLoading={isLoading} setPage={setPage} />
+    <Pagination startItem={startItem} endItem={endItem} total={total} page={page} pageCount={pageCount} isLoading={isLoading} setPage={setPage} itemLabel={label} />
   </div>;
 };
 
