@@ -1,4 +1,4 @@
-import { uuidv4 } from "zod";
+import { uuidv4 } from "zod"; // for temp password
 import {
   dbCreateProfile,
   dbDeactivateUser,
@@ -52,13 +52,13 @@ export async function createUser(data: CreateUserSchema) {
   if (existingUser) throw new AdminServiceError("User already exists", 409);
 
   // Step 2: Create Supabase Auth user
-  // We will use a random temporary password
+  // We will use a random temporary password, user never sees it just required by supabase
   const tempPassword = uuidv4().toString();
   const { data: authData, error: authError } =
     await supabaseAdmin.auth.admin.createUser({
       email: data.email,
       password: tempPassword,
-      email_confirm: true,
+      email_confirm: true, // skips the verification step
     });
 
   if (authError || !authData.user) {
@@ -83,6 +83,7 @@ export async function createUser(data: CreateUserSchema) {
 
   if (magicLinkError || !magicLinkData?.properties?.action_link) {
     console.error("Error generating magic link:", magicLinkError);
+    // user is still created even if email failed
     return profile;
   }
 

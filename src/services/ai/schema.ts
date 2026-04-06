@@ -102,3 +102,12 @@ export const generateCallFollowUpRequestSchema = z.object({
 });
 
 export type GenerateCallFollowUpRequest = z.infer<typeof generateCallFollowUpRequestSchema>;
+
+
+export const saveCallFollowUpSchema = z.object({
+  leadId: z.uuid(),
+  callFollowUp: callFollowUpSchema,
+  agentNotes: z.string().trim().max(5000).optional(),
+});
+
+export type SaveCallFollowUpRequest = z.infer<typeof saveCallFollowUpSchema>;

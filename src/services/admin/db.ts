@@ -86,6 +86,7 @@ export async function dbUpdateUser(
   });
 }
 
+// Soft deletes a user (does NOT remove from DB)
 export async function dbDeactivateUser(userId: string) {
   return prisma.profile.update({
     where: { id: userId },

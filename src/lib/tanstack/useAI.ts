@@ -53,6 +53,25 @@ export function useGenerateCallFollowup(leadId: string) {
   });
 }
 
+
+export function useSaveCallFollowUp(leadId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (followUp: CallFollowUp) => {
+      const { data } = await api.post(`/ai/call-followup/save`, {
+        leadId,
+        callFollowUp: followUp,
+      });
+      return data.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["brief", leadId] });
+    },
+  });
+}
+
+
 export function useGetBrief(leadId: string) {
   return useQuery({
     queryKey: ["brief", leadId],

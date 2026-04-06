@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { SaveLeadBriefRequest } from "./schema";
+import { SaveCallFollowUpRequest, SaveLeadBriefRequest } from "./schema";
 import { Profile } from "@/generated/prisma/client";
 
 export async function dbGetLeadWithContext(leadId: string) {
@@ -68,6 +68,24 @@ export async function dbCreateLeadBrief(
       leadId: request.leadId,
       brief: request.brief,
       createdById: user.id,
+    },
+  });
+}
+
+
+export async function dbCreateCallFollowUp(
+  request: SaveCallFollowUpRequest,
+  user: Profile,
+) {
+  return await prisma.aILeadBrief.create({
+    data: {
+      leadId: request.leadId,
+      createdById: user.id,
+      brief: {
+        type: "call_followup",   // distinguish it from lead briefs
+        content: request.callFollowUp,
+        agentNotes: request.agentNotes,
+      },
     },
   });
 }

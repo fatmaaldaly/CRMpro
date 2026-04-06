@@ -6,6 +6,7 @@ import { useState } from "react"
 import UsersTable from "./UsersTable"
 import { CreateUserDialog } from "./create-user-dialog"
 
+
 const UsersPageClient = () => {
   const [isCreateUserDialogOpen, setIsCreateUserDialogOpen] = useState(false)
   const { data: users } = useUsers()
@@ -17,7 +18,13 @@ const UsersPageClient = () => {
           <h1 className="text-2xl font-bold">Users</h1>
           <p className="text-sm text-muted-foreground">Manage your users and their roles.</p>
         </div>
-        <Button onClick={() => setIsCreateUserDialogOpen(true)}>+ Create User</Button>
+
+        <div className="flex gap-2">
+          <Button onClick={() => setIsCreateUserDialogOpen(true)}>
+            + Create User
+          </Button>
+        </div>
+        
       </div>
       <div>
         <UsersTable users={users ?? []} />

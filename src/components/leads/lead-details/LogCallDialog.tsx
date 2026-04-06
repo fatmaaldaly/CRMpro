@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useGenerateCallFollowup } from "@/lib/tanstack/useAI";
+import { useGenerateCallFollowup, useSaveCallFollowUp } from "@/lib/tanstack/useAI";
 import { useCreateLeadReminder } from "@/lib/tanstack/useReminders";
 import type { CallFollowUp } from "@/services/ai/schema";
 import { Sparkles } from 'lucide-react';
@@ -42,6 +42,8 @@ export default function LogCallDialog({ leadId }: { leadId: string }) {
     const logCallAttempt = useLogCallAttempt(leadId);
     const generateCallFollowup = useGenerateCallFollowup(leadId);
     const createReminder = useCreateLeadReminder(leadId);
+    const saveCallFollowUp = useSaveCallFollowUp(leadId);
+
 
 
 
@@ -95,34 +97,42 @@ export default function LogCallDialog({ leadId }: { leadId: string }) {
     }
 
 
-  function handleCreateReminder() {
-    const followup = generateCallFollowup.data;
-    if (!followup) return;
+function handleCreateReminder() {
+  const followup = generateCallFollowup.data;
+  if (!followup) return;
 
-    setError("");
-    createReminder.mutate(
-      {
+  setError("");
+
+  // save to db
+  saveCallFollowUp.mutate(followup, {
+    onSuccess: () => {
+      // then create reminder
+      createReminder.mutate({
         leadId,
         title: followup.suggestedReminder.title,
         note: followup.suggestedReminder.note,
         dueAt: new Date(followup.suggestedReminder.suggestedDueAt),
       },
-      {
+      
+     {
         onSuccess: () => {
           handleOpenChange(false);
         },
-        onError: (err) => {
-          setError(getApiErrorMessage(err, "Failed to create reminder"));
-        },
-      },
-    );
-  }
+        },);
+      
+    },
+    onError: (err) => {
+      setError(getApiErrorMessage(err, "Failed to save follow-up"));
+    },
+  });
+}
 
 
     function handleDiscard() {
       setOpen(false);
       resetForm();
     }
+
 
 
   return (

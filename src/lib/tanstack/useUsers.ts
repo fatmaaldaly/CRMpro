@@ -16,6 +16,7 @@ export type User = {
 // LIST USERS (Query)
 // ------------------------------------------------------------------
 export function useUsers() {
+  // fetching an array of users
   return useQuery<User[]>({
     queryKey: ["admin", "users"],
     queryFn: async () => {

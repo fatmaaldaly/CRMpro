@@ -1,5 +1,3 @@
-// src/services/admin/helpers.ts
-//
 // Helper functions for admin operations.
 // Currently: email template generation for user invitations.
 //

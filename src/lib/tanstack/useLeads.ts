@@ -8,6 +8,10 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 
+// useQuey: get data (GET)
+// useMutation: change data (POST, PUT, PATCH, DELETE)
+// useQueryClient: control cache (invalidate)
+
 export function useGetLeads(params: ListLeadsParams) {
   return useQuery({
     queryKey: ["leads", params],

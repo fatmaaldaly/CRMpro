@@ -1,4 +1,5 @@
 import {
+  dbCreateCallFollowUp,
   dbCreateLeadBrief,
   dbGetLastLeadBrief,
   dbGetLeadWithContext,
@@ -7,12 +8,13 @@ import {
 } from "./db";
 import { buildCallFollowupPrompt, buildLeadBriefPrompt, validateLeadAccess } from "./helpers";
 import { generateText, Output } from "ai";
-import { callFollowUpSchema, leadBriefSchema, SaveLeadBriefRequest } from "./schema";
+import { callFollowUpSchema, leadBriefSchema, SaveCallFollowUpRequest, SaveLeadBriefRequest } from "./schema";
 import { CallOutcome } from "../activity";
 import { createAIActivity } from "../activity/service";
 import { LeadServiceError } from "../lead/service";
 import { ActivityType } from "@/generated/prisma/client";
 import { Profile } from "@/generated/prisma/client";
+
 
 
 export async function generateLeadBrief(
@@ -131,6 +133,32 @@ export async function generateCallFollowup(
 }
 
 
+export async function saveCallFollowUp(
+  request: SaveCallFollowUpRequest,
+  user: Profile,
+) {
+  const lead = await dbGetLeadWithContext(request.leadId);
+  if (!lead) throw new Error("Lead not found");
+
+  if (!(await validateLeadAccess(lead.assignedTo?.id, user))) {
+    throw new Error("You are not authorized to access this lead");
+  }
+
+  // Save in AILeadBrief table
+  const saved = await dbCreateCallFollowUp(request, user);
+
+  // Log activity
+  await createAIActivity({
+    type: ActivityType.AI_FOLLOWUP_DRAFT_GENERATED,
+    leadId: request.leadId,
+    actorId: user.id,
+    content: `Call follow-up saved by ${user.name}`,
+  });
+
+  return saved;
+}
+
+
 export async function getLastLeadBrief(leadId: string, user: Profile) {
   const lead = await dbGetLeadWithContext(leadId);
   if (!lead) {
@@ -144,3 +172,4 @@ export async function getLastLeadBrief(leadId: string, user: Profile) {
   const row = await dbGetLastLeadBrief(leadId);
   return row ?? null;
 } 
+
