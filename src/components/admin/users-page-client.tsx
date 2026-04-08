@@ -9,7 +9,6 @@ import { CreateUserDialog } from "./create-user-dialog"
 
 const UsersPageClient = () => {
   const [isCreateUserDialogOpen, setIsCreateUserDialogOpen] = useState(false)
-  const { data: users } = useUsers()
 
   return (
     <div className="space-y-4 p-6">
@@ -27,7 +26,7 @@ const UsersPageClient = () => {
         
       </div>
       <div>
-        <UsersTable users={users ?? []} />
+        <UsersTable />
       </div>
       <CreateUserDialog
         open={isCreateUserDialogOpen}

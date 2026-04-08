@@ -1,4 +1,4 @@
-import { createUserSchema, updateUserSchema } from "./schema";
+import { createUserSchema, listUsersPaginatedSchema, updateUserSchema } from "./schema";
 import {
   createUser,
   deactivateUser,
@@ -6,6 +6,7 @@ import {
   listUsers,
   reactivateUser,
   updateUserById,
+  resendInvite,
 } from "./service";
 
 export const AdminService = {
@@ -16,6 +17,7 @@ export const AdminService = {
     update: updateUserById,
     deactivate: deactivateUser,
     reactivate: reactivateUser,
+    resendInvite: resendInvite,
   },
 } as const;
 
@@ -23,5 +25,6 @@ export const AdminSchema = {
   user: {
     create: createUserSchema,
     update: updateUserSchema,
+    listPaginated: listUsersPaginatedSchema,
   },
 } as const;

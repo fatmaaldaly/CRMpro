@@ -22,7 +22,6 @@ export class LeadServiceError extends Error {
 export async function listLeads(profile: Profile, params: ListLeadsParams) {
   // Build where clause
   const where: Prisma.LeadWhereInput = {};
-
   // If agent, only show leads assigned to them
   // manager/admin can see all leads
   if (profile.role === Role.AGENT) {

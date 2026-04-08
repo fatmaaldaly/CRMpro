@@ -4,18 +4,29 @@ import { Role } from "@/generated/prisma/enums";
 import { handleRouteError } from "@/utils/handleRouteError";
 import { AdminSchema, AdminService } from "@/services/admin";
 
+
 // ------------------------------------------------------------------
 // GET /api/admin/users — List all users
 // ------------------------------------------------------------------
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     // Only admins can see the user list.
     // If a non-admin calls this, authenticateUser throws a 403.
     await authenticateUser([Role.ADMIN]);
+    // Get query params
+    const searchParams = request.nextUrl.searchParams;
+    const page = searchParams.get("page");
+    const pageSize = searchParams.get("pageSize");
 
-    const users = await AdminService.user.list();
+    // validate query params
+    const params = AdminSchema.user.listPaginated.parse({
+      page,
+      pageSize,
+    });
 
-    return NextResponse.json({ success: true, data: users });
+    const users = await AdminService.user.list(params);
+
+    return NextResponse.json({ success: true, data: users});
   } catch (error) {
     return handleRouteError(error);
   }

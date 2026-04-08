@@ -8,7 +8,7 @@ import {
   dbReactivateUser,
   dbUpdateUser,
 } from "./db";
-import { CreateUserSchema, UpdateUserSchema } from "./schema";
+import { CreateUserSchema, ListUsersPaginatedSchema, UpdateUserSchema } from "./schema";
 import supabaseAdmin from "@/lib/supabase/admin";
 import { resend } from "@/lib/resend";
 import { generateInviteEmailHTML } from "./helpers";
@@ -106,8 +106,11 @@ export async function createUser(data: CreateUserSchema) {
  * List all users in the system.
  * No role filtering — only admins can call this (enforced at route level).
  */
-export async function listUsers() {
-  return dbListAllUsers();
+// export async function listUsers() {
+//   return dbListAllUsers();
+// }
+export async function listUsers(params: ListUsersPaginatedSchema) {
+  return dbListAllUsers(params);
 }
 
 // ------------------------------------------------------------------
@@ -118,7 +121,23 @@ export async function getUserById(id: string) {
   if (!user) {
     throw new AdminServiceError("User not found", 404);
   }
-  return user;
+
+    // 1. Get auth users from Supabase
+  const { data, error } = await supabaseAdmin.auth.admin.listUsers();
+
+  if (error) {
+    throw new AdminServiceError("Failed to fetch auth users", 500);
+  }
+
+  // 2. Find matching auth user (by email)
+  const authUser = data.users.find((u) => u.email === user.email);
+
+  // 3. Merge data
+  return {
+    ...user,
+    lastSignInAt: authUser?.last_sign_in_at ?? null, 
+  };
+ 
 }
 
 // ------------------------------------------------------------------
@@ -208,4 +227,43 @@ export async function reactivateUser(targetUserId: string) {
   }
 
   return dbReactivateUser(targetUserId);
+}
+
+
+export async function resendInvite(targetUserId: string) {
+  // get user
+  const user = await dbFindUserById(targetUserId);
+  if (!user) {
+    throw new AdminServiceError("User not found", 404);
+  }
+
+  // generate magic link
+  const { data: magicLinkData, error: magicLinkError } =
+    await supabaseAdmin.auth.admin.generateLink({
+      type: "magiclink",
+      email: user.email,
+    });
+
+  // resend email
+  if (magicLinkError || !magicLinkData?.properties?.action_link) {
+    console.error("Error generating magic link:", magicLinkError);
+    throw new AdminServiceError("Failed to generate magic link", 500);
+  }
+
+  const magicLink = magicLinkData.properties.action_link;
+
+  await resend.emails.send({
+    from: "name@company.com",
+    to: user.email,
+    subject: "You're invited to CRM Pro",
+    html: generateInviteEmailHTML(user.name, magicLink),
+  });
+
+  return {
+    success: true,
+    email: user.email,
+    message: `Invite re-sent to ${user.email}.`,
+
+  };
+
 }

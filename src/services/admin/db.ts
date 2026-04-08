@@ -1,5 +1,7 @@
 import { Role } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/prisma";
+import { ListUsersPaginatedSchema } from "./schema";
+import { buildPagination } from "@/utils/pagination";
 
 export async function dbFindUserByEmail(email: string) {
   return await prisma.profile.findUnique({
@@ -30,19 +32,49 @@ export async function dbFindUserById(id: string) {
   });
 }
 
-export async function dbListAllUsers() {
-  return await prisma.profile.findMany({
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      role: true,
-      isActive: true,
-      createdAt: true,
-    },
-  });
+
+// export async function dbListAllUsers(params: ListUsersPaginatedSchema) {
+//   return await prisma.profile.findMany({
+//     orderBy: { createdAt: "desc" },
+//     select: {
+//       id: true,
+//       email: true,
+//       name: true,
+//       role: true,
+//       isActive: true,
+//       createdAt: true,
+//     },
+//   });
+// }
+
+export async function dbListAllUsers(
+  params: ListUsersPaginatedSchema
+) {
+  const [users, total] = await Promise.all([
+    prisma.profile.findMany({
+      orderBy: { createdAt: "desc" },
+      take: params.pageSize,
+      skip: (params.page - 1) * params.pageSize,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        isActive: true,
+        createdAt: true,
+      },
+    }),
+    prisma.profile.count(),
+  ]);
+
+  return {
+    users,
+    pagination: buildPagination(total, params.page, params.pageSize),
+  };
 }
+
+
+
 
 export async function dbCreateProfile(data: {
   id: string;

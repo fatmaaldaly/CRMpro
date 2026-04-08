@@ -5,6 +5,7 @@ import {
   useUpdateUser,
   useDeactivateUser,
   useReactivateUser,
+  useResendInvite,
 } from "@/lib/tanstack/useUsers";
 import { UpdateUserSchema } from "@/services/admin/schema";
 import { useState } from "react";
@@ -17,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
-import { MoreHorizontal, UserCog, UserX } from "lucide-react";
+import { Mail, MoreHorizontal, UserCog, UserX } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,6 +47,8 @@ import {
 } from "../ui/select";
 import { Role } from "@/generated/prisma/enums";
 
+
+
 export function UserActions({ user }: { user: User }) {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showActivationDialog, setShowActivationDialog] = useState(false);
@@ -58,6 +61,7 @@ export function UserActions({ user }: { user: User }) {
   const updateUser = useUpdateUser(user.id);
   const deactivateUser = useDeactivateUser(user.id);
   const reactivateUser = useReactivateUser(user.id);
+  const resendInvite = useResendInvite(user.id);
 
   function handleUpdateUser() {
     const trimmedName = updateUserForm.name.trim();
@@ -120,6 +124,18 @@ export function UserActions({ user }: { user: User }) {
     });
   }
 
+  function handleResendInvite() {
+    resendInvite.mutate(undefined, {
+      onSuccess: () => {
+        toast.success("Invite resent successfully.");
+      },
+      onError: () => {
+        toast.error("Failed to resend invite.");
+      },
+    })
+
+  }
+
   const isActivationPending = deactivateUser.isPending || reactivateUser.isPending;
   const hasEditChanges =
     updateUserForm.name.trim() !== user.name || updateUserForm.role !== user.role;
@@ -142,6 +158,17 @@ export function UserActions({ user }: { user: User }) {
             <UserCog className="mr-2 h-4 w-4" />
             Edit User
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          {!user.lastSignInAt && (
+            <>
+              <DropdownMenuItem onClick={handleResendInvite}>
+                <Mail className="mr-2 h-4 w-4" />
+                Resend invite
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </>
+          )}
+ 
           <DropdownMenuSeparator />
           {user.isActive ? (
             <DropdownMenuItem

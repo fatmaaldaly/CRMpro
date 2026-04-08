@@ -214,9 +214,6 @@ export function CSVImporter() {
               {isPreviewOpen ? "Hide" : "Preview"} valid rows
             </Button>
             {isPreviewOpen && (
-              // <h3 className="text-sm font-semibold text-green-600">
-              //   Valid Rows
-              // </h3>
               <div className="rounded-md border max-h-60 overflow-y-auto">
                 <Table>
                   <TableHeader>

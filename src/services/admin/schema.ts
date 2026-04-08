@@ -15,3 +15,12 @@ export const updateUserSchema = z.object({
 });
 
 export type UpdateUserSchema = z.infer<typeof updateUserSchema>;
+
+
+export const listUsersPaginatedSchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  pageSize: z.coerce.number().min(1).max(100).default(10),
+
+});
+
+export type ListUsersPaginatedSchema = z.infer<typeof listUsersPaginatedSchema>;

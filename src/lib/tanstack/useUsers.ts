@@ -1,7 +1,8 @@
 import { Role } from "@/generated/prisma/enums";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api";
-import { CreateUserSchema, UpdateUserSchema } from "@/services/admin/schema";
+import { CreateUserSchema, ListUsersPaginatedSchema, UpdateUserSchema } from "@/services/admin/schema";
+import { PaginationMeta } from "@/utils/pagination";
 
 export type User = {
   id: string;
@@ -10,17 +11,26 @@ export type User = {
   role: Role;
   isActive: boolean;
   createdAt: Date;
+  lastSignInAt: string | null;
 };
+
+export interface ListUsersResponseData {
+  users: User[];
+  pagination: PaginationMeta;
+}
+
 
 // ------------------------------------------------------------------
 // LIST USERS (Query)
 // ------------------------------------------------------------------
-export function useUsers() {
-  // fetching an array of users
-  return useQuery<User[]>({
-    queryKey: ["admin", "users"],
-    queryFn: async () => {
-      const { data } = await api.get("/admin/users");
+//params: { page: number; pageSize: number }) {
+export function useUsers(params: ListUsersPaginatedSchema) {
+  return useQuery({
+    queryKey: ["admin", "users", params],
+    queryFn: async (): Promise<ListUsersResponseData> => {
+      const { data } = await api.get("/admin/users", {
+        params,
+      });
       return data.data;
     },
   });
@@ -86,6 +96,16 @@ export function useReactivateUser(id: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+    },
+  });
+}
+
+
+export function useResendInvite(id: string) {
+  return useMutation({
+    mutationFn: async (): Promise<{ success: boolean; email: string; message: string }> => {
+      const { data } = await api.post(`/admin/users/${id}/resend-invite`);
+      return data.data;
     },
   });
 }

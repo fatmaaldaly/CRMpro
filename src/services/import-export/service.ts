@@ -6,12 +6,15 @@ import { buildCSVString } from "./helpers";
 
 
 export async function processImport(
+  // an array of CSV rows already validated. Each row has { phone, name, email, assigneeEmail }
   rows: CSVLeadRow[],
   importerProfile: Profile,
 ): Promise<ImportSummary> {
+  // number of successfully imported leads
   let importedCount = 0;
+  // an array to collect human-readable error messages for rows that fail
   const errors: string[] = [];
-
+  // Loop over each CSV row 
   for (const row of rows) {
     try {
       // --- Resolve assignee ---
@@ -26,9 +29,11 @@ export async function processImport(
           errors.push(
             `Row (${row.phone}): Assignee "${row.assigneeEmail}" not found`,
           );
+          // skip the rest of this row and move to the next CSV row
           continue;
         }
 
+        // If the assignee exists but is deactivated 
         if (!assignee.isActive) {
           errors.push(
             `Row (${row.phone}): Assignee "${row.assigneeEmail}" is deactivated`,

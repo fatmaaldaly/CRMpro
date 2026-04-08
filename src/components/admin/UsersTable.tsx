@@ -1,7 +1,11 @@
-import { User } from "@/lib/tanstack/useUsers"
+"use client"
+
+import {useUsers } from "@/lib/tanstack/useUsers"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
 import { Badge } from "../ui/badge"
 import { UserActions } from "./UserActions"
+import { Pagination } from "../leads/reusable";
+import { useState } from "react";
 
 // Color mapping for role badges.
 // These use Tailwind's default color palette.
@@ -11,8 +15,22 @@ const roleBadgeVariant: Record<string, "default" | "info" | "outline"> = {
   AGENT: "outline",
 };
 
-const UsersTable = ({ users }: { users: User[] }) => {
-  if (users.length === 0) {
+
+const UsersTable = () => {
+    const [page, setPage] = useState(1);
+    const pageSize = 10;
+    const { data, isLoading } = useUsers({ page, pageSize });
+    const usersList = data?.users ?? [];
+    const pagination = data?.pagination;
+    const startItem = pagination && pagination.total > 0? (pagination.page - 1) * pagination.pageSize + 1: 0;
+    const endItem = pagination && pagination.total > 0? Math.min(pagination.page * pagination.pageSize, pagination.total): 0;
+    const total = pagination?.total ?? 0;
+    const pageCount = pagination?.pages ?? 1;
+    const label = "Users";
+
+
+
+  if (usersList.length === 0) {
     return <div className="rounded-md border p-8 text-center text-muted-foreground">
       No users yet. Create one to get started.
     </div>
@@ -31,7 +49,7 @@ const UsersTable = ({ users }: { users: User[] }) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users.map(user => {
+          {usersList.map(user => {
             return (
               <TableRow key={user.id}>
                 <TableCell className="font-medium">{user.name}</TableCell>
@@ -71,6 +89,8 @@ const UsersTable = ({ users }: { users: User[] }) => {
           })}
         </TableBody>
       </Table>
+     <Pagination startItem={startItem} endItem={endItem} total={total} page={page} pageCount={pageCount} isLoading={isLoading} setPage={setPage} itemLabel={label} />
+      
     </div>
   )
 }

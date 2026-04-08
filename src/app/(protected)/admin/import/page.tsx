@@ -1,5 +1,3 @@
-// src/app/(protected)/admin/import/page.tsx
-//
 // Admin page for CSV lead imports.
 // Same auth pattern as the users page: server-side role check.
 
