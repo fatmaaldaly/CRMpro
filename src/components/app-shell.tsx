@@ -28,13 +28,13 @@ export function AppShell({
 
   return (
     <SidebarInset className="min-h-svh bg-[linear-gradient(180deg,#f8fbff_0%,#f4f7fb_100%)]">
-      <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between border-b border-slate-200/80 bg-white/95 px-4 backdrop-blur md:px-6">
+      <header className="sticky top-0 z-20 flex h-16 items-center border-b border-slate-200/80 bg-white/95 px-4 backdrop-blur md:px-6">
+        {/* LEFT SIDE */}
         <div className="flex min-w-0 items-center gap-3">
           <SidebarTrigger className="size-9 rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm hover:bg-slate-50 hover:text-slate-950" />
-          <Separator
-            orientation="vertical"
-            className="hidden h-6 bg-slate-200 sm:block"
-          />
+
+          <Separator orientation="vertical" className="hidden h-6 bg-slate-200 sm:block" />
+
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-slate-900">
               Welcome, {formatRoleLabel(role)}!
@@ -45,8 +45,14 @@ export function AppShell({
           </div>
         </div>
 
-        <p className="hidden text-sm text-slate-500 md:block">{email}</p>
-        <NotificationBell />
+        {/* RIGHT SIDE */}
+        <div className="ml-auto flex items-center gap-3">
+          <p className="hidden text-sm text-slate-500 md:block">
+            {email}
+          </p>
+
+          <NotificationBell />
+        </div>
       </header>
 
       <div className="flex flex-1 flex-col">{children}</div>

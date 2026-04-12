@@ -4,13 +4,15 @@ import { AuthenticationError } from "./authenticateUser";
 import { ZodError } from "zod";
 import { NextResponse } from "next/server";
 import { AdminServiceError } from "@/services/admin/service";
+import { DashboardServiceError } from "@/services/dashboard/service";
 
 export const handleRouteError = (error: unknown) => {
   if (
     error instanceof AuthenticationError ||
     error instanceof LeadServiceError ||
     error instanceof NotificationServiceError ||
-    error instanceof AdminServiceError
+    error instanceof AdminServiceError ||
+    error instanceof DashboardServiceError
   ) {
     return NextResponse.json(
       { error: error.message },

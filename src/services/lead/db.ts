@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma"; // prisma client, used to query the db
 import {
   CreateLeadRequest,
   EditLeadRequest,
@@ -7,14 +7,16 @@ import {
   ListLeadsParams,
   ListLeadsResponseData,
 } from "./schema";
-import { Prisma, Profile, Role } from "@/generated/prisma/client";
+import { Prisma, Profile, Role } from "@/generated/prisma/client"; // Prisma → types like LeadWhereInput, TransactionClient
 import { buildPagination } from "@/utils/pagination";
 
+
+// Select Objects, These define which fields to fetch from the db
 const assigneeSelect = {
   id: true,
   name: true,
   email: true,
-} satisfies Prisma.ProfileSelect;
+} satisfies Prisma.ProfileSelect; // ensures TypeScript checks that this object matches Prisma’s expected select type.
 
 const leadSummarySelect = {
   id: true,
@@ -30,6 +32,7 @@ const leadSummarySelect = {
   },
 } satisfies Prisma.LeadSelect;
 
+// Extends leadSummarySelect by adding updatedAt, used for detailed lead view.
 const leadDetailSelect = {
   ...leadSummarySelect,
   updatedAt: true,
@@ -39,16 +42,19 @@ export async function dbListLeads(
   where: Prisma.LeadWhereInput,
   params: ListLeadsParams,
 ): Promise<ListLeadsResponseData> {
+  // Promise.all runs both queries in parallel: findMany and count
   const [leads, total] = await Promise.all([
+    // fetches the lead records
     prisma.lead.findMany({
       where,
       select: leadSummarySelect,
-      take: params.pageSize,
-      skip: (params.page - 1) * params.pageSize,
+      take: params.pageSize, // how many to fetch per page
+      skip: (params.page - 1) * params.pageSize, // how many to skip to go to next page
       orderBy: {
         createdAt: "desc",
       },
     }),
+    // counts how many total records match where clause
     prisma.lead.count({ where }),
   ]);
 
@@ -65,6 +71,8 @@ export async function dbGetLeadById(id: string): Promise<LeadDetail | null> {
   });
 }
 
+
+// fetch an agent to assign a lead
 export async function dbFindAssignableAgentById(
   id: string,
 ): Promise<LeadAssigneeSummary | null> {
@@ -78,6 +86,8 @@ export async function dbFindAssignableAgentById(
   });
 }
 
+
+// Optional transaction support (tx), If no transaction → use the regular Prisma client
 export async function dbCreateLead(
   profile: Profile,
   data: CreateLeadRequest,

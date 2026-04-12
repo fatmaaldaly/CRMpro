@@ -12,6 +12,7 @@ import { CreateUserSchema, ListUsersPaginatedSchema, UpdateUserSchema } from "./
 import supabaseAdmin from "@/lib/supabase/admin";
 import { resend } from "@/lib/resend";
 import { generateInviteEmailHTML } from "./helpers";
+import { link } from "fs/promises";
 
 // Custom error class for admin operations.
 // Follows the same pattern as LeadServiceError and NotificationServiceError.
@@ -81,9 +82,11 @@ export async function createUser(data: CreateUserSchema) {
       email: data.email,
     });
 
+  // magicLinkData?.properties?.action_link contains the URL for the magic link
   if (magicLinkError || !magicLinkData?.properties?.action_link) {
     console.error("Error generating magic link:", magicLinkError);
     // user is still created even if email failed
+    console.log("Magic link:", link);
     return profile;
   }
 

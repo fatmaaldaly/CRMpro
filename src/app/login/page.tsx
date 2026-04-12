@@ -20,10 +20,13 @@ export default function Login() {
     setError("")
     setLoading(true)
 
-    const { error: authError } = await supabase.auth.signInWithPassword({
+    const {data, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password
     })
+
+    if (error) console.error(error);
+    // console.log(data.session?.access_token);
 
     if (authError) {
       setError(authError.message)
@@ -35,6 +38,8 @@ export default function Login() {
     router.refresh()
     setLoading(false)
   }
+
+
 
   return (
     <div className="flex justify-center items-center h-screen w-screen">
@@ -68,6 +73,16 @@ export default function Login() {
             {/* Error Message */}
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <Button className="w-full" type="submit">Login</Button>
+            <Button
+              type="button"
+              onClick={async () => {
+                const { data } = await supabase.auth.getSession();
+                console.log("access_token:", data.session?.access_token);
+                console.log("refresh_token:", data.session?.refresh_token);
+              }}
+            >
+              Get Token
+            </Button>
           </form>
         </CardContent>
       </Card>

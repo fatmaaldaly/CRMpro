@@ -10,11 +10,6 @@ export async function dbFindProfileByEmail(email: string) {
 
 
 export async function dbGetLeadsForExport(where: Prisma.LeadWhereInput) {
-  // const where: Prisma.LeadWhereInput =
-  //   profile.role === Role.AGENT
-  //     ? { assignedToId: profile.id }
-  //     : {};
-
   return await prisma.lead.findMany({
     where,
     select: {

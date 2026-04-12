@@ -1,6 +1,9 @@
+// checks for authentication and authorization
+
 import { Role } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+
 
 export class AuthenticationError extends Error {
   constructor(
@@ -13,11 +16,10 @@ export class AuthenticationError extends Error {
 }
 
 export async function authenticateUser(allowedRoles?: Role[]) {
+  // authentication check
   // Step 1: Get the current session from Supabase
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const {data: { user },} = await supabase.auth.getUser();
 
   // If no user, return error
   if (!user) {
@@ -38,7 +40,7 @@ export async function authenticateUser(allowedRoles?: Role[]) {
   if (!profile.isActive) {
     throw new AuthenticationError("User is not active", 403);
   }
-
+  // authorization check
   if (allowedRoles && !allowedRoles.includes(profile.role)) {
     throw new AuthenticationError("Unauthorized", 403);
   }

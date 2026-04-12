@@ -1,13 +1,9 @@
+// second layer of authentication
+
 import { Role } from "@/generated/prisma/enums";
 import { createLeadSchema, listLeadsQuerySchema } from "@/services/lead/schema";
-import {
-  createLead,
-  LeadServiceError,
-  listLeads,
-} from "@/services/lead/service";
-import {
-  authenticateUser,
-  AuthenticationError,
+import {createLead, LeadServiceError, listLeads,} from "@/services/lead/service";
+import {authenticateUser, AuthenticationError,
 } from "@/utils/authenticateUser";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";

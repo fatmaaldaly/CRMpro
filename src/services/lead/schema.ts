@@ -35,6 +35,7 @@ export const editLeadSchema = z.object({
 
 export type EditLeadRequest = z.infer<typeof editLeadSchema>;
 
+// simplified user info for assignees
 export interface LeadAssigneeSummary {
   id: string;
   name: string;
