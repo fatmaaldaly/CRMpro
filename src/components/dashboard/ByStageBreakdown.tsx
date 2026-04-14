@@ -1,10 +1,12 @@
+// renders a bar chart using Recharts inside a styled UI card.
 import { DashboardData } from "@/services/dashboard"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { BarChart, XAxis, Bar, CartesianGrid } from "recharts"
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart"
 
+// returns only the type of totalLeadsByStage from the full dashboard response
 const ByStageBreakdown = ({ data }: { data: DashboardData["totalLeadsByStage"] }) => {
-
+  // theme & metadata
   const chartConfig = {
     stage: {
       label: "Stage",

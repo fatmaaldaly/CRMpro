@@ -4,7 +4,7 @@ import { Role } from "@/generated/prisma/enums";
 import { handleRouteError } from "@/utils/handleRouteError";
 import { AdminSchema, AdminService } from "@/services/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { cookies } from "next/headers"; 
+
 // import {Role } from "@/generated/prisma/client";
 
 // ------------------------------------------------------------------
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   try {
     // Only admins can see the user list.
     // If a non-admin calls this, authenticateUser throws a 403.
-    const supabase = await createSupabaseServerClient();
+    await createSupabaseServerClient();
     
     await authenticateUser([Role.ADMIN]);
     // Get query params

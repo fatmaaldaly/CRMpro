@@ -1,6 +1,5 @@
 "use client"
 
-import { useUsers } from "@/lib/tanstack/useUsers"
 import { Button } from "../ui/button"
 import { useState } from "react"
 import UsersTable from "./UsersTable"

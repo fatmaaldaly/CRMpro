@@ -4,7 +4,7 @@ import { AuthenticationError } from "./authenticateUser";
 import { ZodError } from "zod";
 import { NextResponse } from "next/server";
 import { AdminServiceError } from "@/services/admin/service";
-import { DashboardServiceError } from "@/services/dashboard/service";
+import { AttachmentServiceError } from "@/services/attachments/service";
 
 export const handleRouteError = (error: unknown) => {
   if (
@@ -12,7 +12,7 @@ export const handleRouteError = (error: unknown) => {
     error instanceof LeadServiceError ||
     error instanceof NotificationServiceError ||
     error instanceof AdminServiceError ||
-    error instanceof DashboardServiceError
+    error instanceof AttachmentServiceError
   ) {
     return NextResponse.json(
       { error: error.message },

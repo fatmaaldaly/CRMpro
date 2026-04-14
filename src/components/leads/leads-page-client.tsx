@@ -16,7 +16,7 @@ import {
 import { useGetLeads } from "@/lib/tanstack/useLeads";
 import { CreateLeadDialog } from "@/components/leads/create-lead-dialog";
 import { Pagination, StageBadge, StatusBadge } from "@/components/leads/reusable";
-import ExportButton from "../admin/ExportButton";
+import ExportButton from "./ExportButton";
 
 export function LeadsPageClient({ role }: { role: Role }) {
   const [page, setPage] = useState(1);

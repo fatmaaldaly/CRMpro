@@ -28,6 +28,7 @@ model Profile {
   reminders     Reminder[]
   notifications Notification[]
   aileadBriefs  AILeadBrief[]
+  attachments   Attachment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -56,6 +57,7 @@ model Lead {
   reminders     Reminder[]
   notifications Notification[]
   aileadBriefs  AILeadBrief[]
+  attachments   Attachment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -169,4 +171,21 @@ model AILeadBrief {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Attachment {
+  id String @id @default(uuid())
+
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id])
+
+  uploadedById String
+  uploadedBy   Profile @relation(fields: [uploadedById], references: [id])
+
+  fileName    String
+  storagePath String @unique
+  mimeType    String
+  sizeBytes   Int
+
+  createdAt DateTime @default(now())
 }

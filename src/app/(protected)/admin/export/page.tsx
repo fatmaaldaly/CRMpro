@@ -1,4 +1,4 @@
-import  ExportButton  from "@/components/admin/ExportButton";
+import  ExportButton  from "@/components/leads/ExportButton";
 
 export default function AdminExportPage() {
   return (
