@@ -15,7 +15,7 @@ const ByStageBreakdown = ({ data }: { data: DashboardData["totalLeadsByStage"] }
   } satisfies ChartConfig
 
   return (
-    <Card className="col-span-3">
+    <Card className="grid-cols-1">
       <CardHeader>
         <CardTitle>Leads by Stage</CardTitle>
       </CardHeader>
@@ -36,6 +36,7 @@ const ByStageBreakdown = ({ data }: { data: DashboardData["totalLeadsByStage"] }
             <Bar dataKey="count" fill="var(--chart-1)" radius={8} />
           </BarChart>
         </ChartContainer>
+       
       </CardContent>
     </Card>
   )

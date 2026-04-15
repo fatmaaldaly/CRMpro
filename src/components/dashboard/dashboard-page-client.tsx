@@ -7,6 +7,7 @@ import KpiCard from "./KpiCard";
 import { Role } from "@/generated/prisma/enums";
 import { cn } from "@/lib/utils";
 import ByStageBreakdown from "./ByStageBreakdown";
+import ByStatusBreakdown from "./ByStatusBreakdown";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 // comparison between this week and last week: 
@@ -34,7 +35,7 @@ export function DashboardPageClient({ role }: { role: Role }) {
     }
     return {
       subHeaderText: "Review the current state of the pipeline in your organization.",
-      secondRowGridStyle: "grid-cols-4"
+      secondRowGridStyle: "grid-cols-3"
     }
     // Recompute only when role changes
   }, [role]);
@@ -83,6 +84,8 @@ export function DashboardPageClient({ role }: { role: Role }) {
       {/* cn(): merges tailwind classess safely */}
       <div className={cn("grid gap-4", secondRowGridStyle)}>
         <ByStageBreakdown data={data.totalLeadsByStage} />
+        
+        <ByStatusBreakdown data={data.totalLeadsByStatus} />
         {/* conditional rendering */}
         {/* If backend returns topAgents → show leaderboard, If not (agent role) → hide it */}
         {data.topAgents ? (<Card>
@@ -98,7 +101,7 @@ export function DashboardPageClient({ role }: { role: Role }) {
             </CardContent>
           </CardHeader>
         </Card>) : <></>}
-      </div>
-    </div>
+      </div>    
+   </div>
   );
 }

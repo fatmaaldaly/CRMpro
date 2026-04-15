@@ -15,8 +15,7 @@ export const AI = ({ leadId }: { leadId: string }) => {
   const saveBrief = useSaveBrief(leadId);
   const { data: briefResponse, isPending: isLoadingBrief } = useGetBrief(leadId);
   const brief = briefResponse?.leadBrief?.brief
-  console.log("briefResponse", briefResponse);
-  console.log("brief", brief);
+
 
 
 

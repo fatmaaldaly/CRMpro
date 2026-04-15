@@ -7,17 +7,6 @@ export default function FollowupReview({ callFollowUp }: { callFollowUp: CallFol
     return <div>No follow-up data available</div>;
   }
 
-  // const callScript = callFollowUp.callScript ?? {
-  //   opening: "",
-  //   questions: [],
-  //   objectionHandlers: [],
-  // };
-  // const suggestedReminder = callFollowUp.suggestedReminder ?? {
-  //   title: "",
-  //   note: "",
-  //   suggestedDueAt: "",
-  // };
-    
     
 return (
 

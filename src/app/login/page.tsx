@@ -26,7 +26,6 @@ export default function Login() {
     })
 
     if (error) console.error(error);
-    // console.log(data.session?.access_token);
 
     if (authError) {
       setError(authError.message)
@@ -73,7 +72,7 @@ export default function Login() {
             {/* Error Message */}
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <Button className="w-full" type="submit">Login</Button>
-            <Button
+            {/* <Button
               type="button"
               onClick={async () => {
                 const { data } = await supabase.auth.getSession();
@@ -82,7 +81,7 @@ export default function Login() {
               }}
             >
               Get Token
-            </Button>
+            </Button> */}
           </form>
         </CardContent>
       </Card>

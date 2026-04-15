@@ -1,18 +1,6 @@
-import {
-  deleteLeadAttachment,
-  getLeadAttachmentSignedUrl,
-  uploadLeadAttachment,
-} from "@/lib/supabase/storage";
-import {
-  dbCreateAttachment,
-  dbGetLeadById,
-  dbListAttachmentsForLead,
-} from "./db";
-import {
-  ALLOWED_MIME_TYPES,
-  AttachmentListItem,
-  MAX_FILE_SIZE_BYTES,
-} from "./schema";
+import {deleteLeadAttachment, getLeadAttachmentSignedUrl, uploadLeadAttachment,} from "@/lib/supabase/storage";
+import {dbCreateAttachment, dbGetLeadById, dbListAttachmentsForLead,} from "./db";
+import {ALLOWED_MIME_TYPES, AttachmentListItem, MAX_FILE_SIZE_BYTES,} from "./schema";
 import { UserSnapshot } from "@/utils/types/user";
 import { buildStoragePath } from "./helpers";
 import { prisma } from "@/lib/prisma";

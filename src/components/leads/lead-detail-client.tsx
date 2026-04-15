@@ -11,6 +11,7 @@ import { AddNoteDialog } from "./lead-details/AddNoteDialog";
 import LogCallDialog from "./lead-details/LogCallDialog";
 import {Reminders}from "./lead-details/Reminders";
 import { AI } from "./lead-details/AI";
+import Files from "./lead-details/Files";
 
 export function LeadDetailClient({
   id,
@@ -95,7 +96,7 @@ export function LeadDetailClient({
         <TabsContent value="files">
           <Card>
             <CardContent className="py-8 text-sm text-muted-foreground">
-              File uploads will be built in a later session.
+              <Files leadId={id}/>
             </CardContent>
           </Card>
         </TabsContent>
