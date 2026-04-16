@@ -1,6 +1,7 @@
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
+
 export async function dbListAttachmentsForLead(leadId: string) {
   return prisma.attachment.findMany({
     where: { leadId },
@@ -27,6 +28,7 @@ export async function dbFindAttachmentById(id: string) {
     where: { id },
     select: {
       id: true,
+      leadId: true,
       fileName: true,
       mimeType: true,
       sizeBytes: true,
@@ -69,4 +71,13 @@ export function dbCreateAttachment(
       id: true,
     },
   });
+}
+
+
+export function dbDeleteAttachment(id: string,  tx?: Prisma.TransactionClient,) {
+  const client = tx ?? prisma;
+  return client.attachment.findUnique({
+    where: {id},
+  })
+
 }

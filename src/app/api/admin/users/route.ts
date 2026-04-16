@@ -5,7 +5,6 @@ import { handleRouteError } from "@/utils/handleRouteError";
 import { AdminSchema, AdminService } from "@/services/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-// import {Role } from "@/generated/prisma/client";
 
 // ------------------------------------------------------------------
 // GET /api/admin/users — List all users

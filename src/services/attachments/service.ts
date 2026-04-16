@@ -1,5 +1,5 @@
 import {deleteLeadAttachment, getLeadAttachmentSignedUrl, uploadLeadAttachment,} from "@/lib/supabase/storage";
-import {dbCreateAttachment, dbGetLeadById, dbListAttachmentsForLead,} from "./db";
+import {dbCreateAttachment, dbDeleteAttachment, dbFindAttachmentById, dbGetLeadById, dbListAttachmentsForLead,} from "./db";
 import {ALLOWED_MIME_TYPES, AttachmentListItem, MAX_FILE_SIZE_BYTES,} from "./schema";
 import { UserSnapshot } from "@/utils/types/user";
 import { buildStoragePath } from "./helpers";
@@ -111,4 +111,40 @@ export async function uploadForLead(input: {
     await deleteLeadAttachment(storagePath);
     throw new AttachmentServiceError("Failed to upload attachment", 500);
   }
+}
+
+
+export async function deleteForLead(attachmentId: string, leadId: string, file: File, userSnapshot: UserSnapshot){
+  // get attachment
+  const attachment = await dbFindAttachmentById(attachmentId);
+  if(!attachment){
+    throw new AttachmentServiceError("attachmnet not found", 404);
+  }
+  // verify it belongs to the lead 
+  if(attachment.leadId !== leadId){
+    throw new AttachmentServiceError("Attachment does not belong to this lead", 403);
+  }
+
+  // delete in storage
+  await deleteLeadAttachment(attachment.storagePath);
+  
+  // transaction for deleting in db and updating activity log
+  try{
+      await prisma.$transaction(async (tx) => {
+      await dbDeleteAttachment(attachmentId, tx);
+      await ActivityService.create([
+        {
+          actorId: userSnapshot.id,
+          leadId,
+          type: ActivityType.ATTACHMENT_DELETED,
+          meta: {fileName: attachment.fileName},
+        },
+      ]);
+    })
+
+  }catch(error){
+    console.error(error);
+    throw new AttachmentServiceError("Failed to delete attachment", 500);
+  }
+
 }

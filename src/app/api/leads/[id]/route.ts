@@ -1,9 +1,6 @@
 import { editLeadSchema, leadIdParamsSchema } from "@/services/lead/schema";
 import { getLead, LeadServiceError, updateLead } from "@/services/lead/service";
-import {
-  authenticateUser,
-  AuthenticationError,
-} from "@/utils/authenticateUser";
+import {authenticateUser, AuthenticationError,} from "@/utils/authenticateUser";
 import { handleRouteError } from "@/utils/handleRouteError";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
