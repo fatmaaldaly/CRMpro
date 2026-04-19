@@ -45,6 +45,7 @@ export async function listForLead(
   );
 }
 
+
 export async function uploadForLead(input: {
   leadId: string;
   file: File;
@@ -98,7 +99,7 @@ export async function uploadForLead(input: {
           actorId: userSnapshot.id,
           leadId,
           type: ActivityType.ATTACHMENT_ADDED,
-          meta: {fileName: file.name},
+          content: `Uploaded attachment: ${file.name}`,
         },
       ]);
 
@@ -114,7 +115,7 @@ export async function uploadForLead(input: {
 }
 
 
-export async function deleteForLead(attachmentId: string, leadId: string, file: File, userSnapshot: UserSnapshot){
+export async function deleteForLead(attachmentId: string, leadId: string, userSnapshot: UserSnapshot){
   // get attachment
   const attachment = await dbFindAttachmentById(attachmentId);
   if(!attachment){
@@ -137,10 +138,15 @@ export async function deleteForLead(attachmentId: string, leadId: string, file: 
           actorId: userSnapshot.id,
           leadId,
           type: ActivityType.ATTACHMENT_DELETED,
-          meta: {fileName: attachment.fileName},
+          content: `Deleted attachment: ${attachment.fileName}`,
+        
         },
-      ]);
+      ],
+    tx);
     })
+    // ONLY delete from storage AFTER DB succeeds
+    // await deleteLeadAttachment(attachment.storagePath);
+    return { id: attachmentId };
 
   }catch(error){
     console.error(error);

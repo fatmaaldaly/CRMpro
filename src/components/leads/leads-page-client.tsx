@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { Inbox } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Inbox, Users } from "lucide-react";
 
-import { Role } from "@/generated/prisma/client";
+import { Role } from "@/generated/prisma/enums";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
   TableBody,
@@ -15,23 +17,55 @@ import {
 } from "@/components/ui/table";
 import { useGetLeads } from "@/lib/tanstack/useLeads";
 import { CreateLeadDialog } from "@/components/leads/create-lead-dialog";
+import  ExportButton  from "@/components/leads/ExportButton";
+import { ReassignLeadsDialog } from "@/components/leads/ReassignLeadsDialog";
 import { Pagination, StageBadge, StatusBadge } from "@/components/leads/reusable";
-import ExportButton from "./ExportButton";
 
 export function LeadsPageClient({ role }: { role: Role }) {
   const [page, setPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showReassignDialog, setShowReassignDialog] = useState(false);
   const pageSize = 10;
   const isManagerOrAdmin = role === "MANAGER" || role === "ADMIN";
   const canCreateLead = role !== "AGENT";
 
   const { data, isLoading, isError } = useGetLeads({ page, pageSize });
 
-  const leads = data?.leads ?? [];
+  const leads = useMemo(() => data?.leads ?? [], [data]);
   const total = data?.pagination.total ?? 0;
   const pageCount = data?.pagination.pages ?? 0;
   const startItem = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const endItem = total === 0 ? 0 : Math.min(page * pageSize, total);
   const hasLeads = leads.length > 0;
+
+  const allOnPageSelected = useMemo(
+    () => hasLeads && leads.every((lead) => selectedIds.has(lead.id)),
+    [hasLeads, leads, selectedIds],
+  );
+  const someOnPageSelected = useMemo(
+    () => leads.some((lead) => selectedIds.has(lead.id)),
+    [leads, selectedIds],
+  );
+
+  const toggleAllOnPage = (checked: boolean) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      for (const lead of leads) {
+        if (checked) next.add(lead.id);
+        else next.delete(lead.id);
+      }
+      return next;
+    });
+  };
+
+  const toggleOne = (leadId: string, checked: boolean) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (checked) next.add(leadId);
+      else next.delete(leadId);
+      return next;
+    });
+  };
 
   return (
     <div className="space-y-6 p-4 md:p-6">
@@ -45,10 +79,16 @@ export function LeadsPageClient({ role }: { role: Role }) {
           </p>
         </div>
 
-        <div className="flex gap-2">
-
-        {canCreateLead ? <CreateLeadDialog /> : null}
-        <ExportButton />
+        <div className="flex items-center gap-2">
+          {isManagerOrAdmin && selectedIds.size > 0 ? (
+            <Button onClick={() => setShowReassignDialog(true)}>
+              <Users className="mr-2 h-4 w-4" />
+              Reassign {selectedIds.size}{" "}
+              {selectedIds.size === 1 ? "lead" : "leads"}
+            </Button>
+          ) : null}
+          <ExportButton />
+          {canCreateLead ? <CreateLeadDialog /> : null}
         </div>
       </div>
 
@@ -71,6 +111,23 @@ export function LeadsPageClient({ role }: { role: Role }) {
               <Table>
                 <TableHeader className="[&_tr]:border-slate-200">
                   <TableRow>
+                    {isManagerOrAdmin ? (
+                      <TableHead className="bg-slate-50/80 px-6 w-10">
+                        <Checkbox
+                          checked={
+                            allOnPageSelected
+                              ? true
+                              : someOnPageSelected
+                                ? "indeterminate"
+                                : false
+                          }
+                          onCheckedChange={(checked) =>
+                            toggleAllOnPage(checked === true)
+                          }
+                          aria-label="Select all leads on this page"
+                        />
+                      </TableHead>
+                    ) : null}
                     <TableHead className="bg-slate-50/80 px-6 text-[11px] tracking-[0.18em] text-slate-500">Name</TableHead>
                     <TableHead className="bg-slate-50/80 px-5 text-[11px] tracking-[0.18em] text-slate-500">Email</TableHead>
                     <TableHead className="bg-slate-50/80 px-5 text-[11px] tracking-[0.18em] text-slate-500">Phone</TableHead>
@@ -85,7 +142,22 @@ export function LeadsPageClient({ role }: { role: Role }) {
                 </TableHeader>
                 <TableBody>
                   {leads.map((lead) => (
-                    <TableRow key={lead.id} className="border-slate-200 hover:bg-slate-50/80">
+                    <TableRow
+                      key={lead.id}
+                      data-state={selectedIds.has(lead.id) ? "selected" : undefined}
+                      className="border-slate-200 hover:bg-slate-50/80 data-[state=selected]:bg-primary/5"
+                    >
+                      {isManagerOrAdmin ? (
+                        <TableCell className="px-6 py-4 w-10">
+                          <Checkbox
+                            checked={selectedIds.has(lead.id)}
+                            onCheckedChange={(checked) =>
+                              toggleOne(lead.id, checked === true)
+                            }
+                            aria-label={`Select ${lead.name}`}
+                          />
+                        </TableCell>
+                      ) : null}
                       <TableCell className="px-6 py-4 font-medium text-slate-900">
                         <Link
                           href={`/leads/${lead.id}`}
@@ -143,6 +215,15 @@ export function LeadsPageClient({ role }: { role: Role }) {
           )
         ) : null}
       </section>
+
+      {isManagerOrAdmin ? (
+        <ReassignLeadsDialog
+          open={showReassignDialog}
+          onOpenChange={setShowReassignDialog}
+          selectedLeadIds={Array.from(selectedIds)}
+          onSuccess={() => setSelectedIds(new Set())}
+        />
+      ) : null}
     </div>
   );
 }

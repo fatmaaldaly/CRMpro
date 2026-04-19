@@ -4,6 +4,7 @@ import {
   LeadDetail,
   ListLeadsParams,
   ListLeadsResponseData,
+  ReassignLeadsRequest,
 } from "@/services/lead/schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
@@ -64,4 +65,22 @@ export function useEditLead(id: string) {
       });
     },
   });
+}
+
+
+export function useReassignLeads(){
+  const queryClient = useQueryClient();
+  return useMutation<{ count: number}, Error, ReassignLeadsRequest>({
+   mutationFn: async (payload) => {
+    const {data} = await api.post(`/leads/reassign/`, payload);
+    return data.data;
+   },
+
+   onSuccess: () => {
+    queryClient.invalidateQueries({queryKey: ["leads"]});
+    queryClient.invalidateQueries({queryKey: ["activities"]});
+   },
+
+  });
+
 }

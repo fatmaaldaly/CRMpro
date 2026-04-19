@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { dbListAttachmentsForLead } from "./db";
+import type { dbListAttachmentsForLead } from "./db";
 
 export const ALLOWED_MIME_TYPES = [
   "image/jpeg",

@@ -6,50 +6,55 @@ import { handleRouteError } from '@/utils/handleRouteError';
 
 
 export async function GET(
-  request: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await authenticateUser();
-    const { id: leadId } = await params;
-    const attachments = await AttachmentService.listForLead(leadId);
+    const { id } = await params;
+
+    const attachments = await AttachmentService.listForLead(id);
     return NextResponse.json({ success: true, data: attachments });
   } catch (error) {
     return handleRouteError(error);
   }
-
 }
 
 
-
 export async function POST(
-  request: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const profile = await authenticateUser();
     // params is a promise it must be awaited
-    const { id: leadId } = await params;
-    // file uploads are multipart/form-data thats why we use formData() not json()
-    const formData = await request.formData();
-    const file = formData.get("file") as File | null;
+    const { id } = await params;
     
-    // validate the file exists
-    if (!file) {
+    // Validate request is multipart/form-data
+    if (!req.headers.get("content-type")?.includes("multipart/form-data")) {
       return NextResponse.json(
-        { error: "No file provided" },
+        { error: "Invalid request content type" },
         { status: 400 },
       );
+    }
+    
+    // file uploads are multipart/form-data thats why we use formData() not json()
+    const formData = await req.formData();
+    const file = formData.get("file");
+    
+    // validate the file exists
+    if (!file || !(file instanceof File)) {
+      return NextResponse.json({ error: "File is required" }, { status: 400 });
     }
 
     // FULL pipeline: validate file, upload to storage, save DB record, create activity log, cleanup on failure
     const attachment = await AttachmentService.uploadForLead({
-      leadId,
+      leadId: id,
       file,
       userSnapshot: profile,
     });
 
-    return NextResponse.json({ success: true, data: attachment }, { status: 201 });
+    return NextResponse.json({ success: true, data: attachment });
   } catch (error) {
     return handleRouteError(error);
   }

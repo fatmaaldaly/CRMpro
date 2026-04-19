@@ -1,5 +1,5 @@
-import { useAttachments, useUploadAttachment } from "@/lib/tanstack/useAttachments";
-import {Paperclip} from "lucide-react";
+import { useAttachments, useDeleteAttachment, useUploadAttachment } from "@/lib/tanstack/useAttachments";
+import {Paperclip, Trash} from "lucide-react";
 import { useRef, useState} from "react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -8,13 +8,14 @@ import {formatFileSize} from "@/services/attachments/helpers";
 
 
 // reuired input: leadId
-export default function Files({ leadId }: { leadId: string }) {
+export default function Files({ leadId}: { leadId: string}) {
     
     // hooks
     const {data, isLoading, isError} = useAttachments(leadId);
     const uploadFile = useUploadAttachment(leadId);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
+    const deleteFile = useDeleteAttachment(leadId);
 
 
     // 4 UI states 
@@ -79,6 +80,19 @@ export default function Files({ leadId }: { leadId: string }) {
   };
 
 
+const handleDelete = (attachmentId: string) => {
+  deleteFile.mutate(attachmentId, {
+    onSuccess: () => {
+      toast.success("File deleted successfully");
+    },
+    onError: () => {
+      toast.error("Error deleting file");
+    },
+
+  });
+};
+
+
     // 1. Loading
     if (isLoading) {
       return <div className="p-4 text-sm text-muted-foreground">Loading files...</div>;
@@ -105,7 +119,7 @@ export default function Files({ leadId }: { leadId: string }) {
               <Paperclip className="size-6 text-slate-400" />
               <p className="text-sm text-muted-foreground">No files yet</p>
               <button
-                className="text-sm font-medium underline"
+                className="text-sm font-medium bg-gray-300 border-2 rounded-2xl w-20 h-8 hover:bg-gray-200"
                 onClick={() => fileInputRef.current?.click()}
               >
                 Upload file
@@ -164,6 +178,7 @@ export default function Files({ leadId }: { leadId: string }) {
               <th className="py-3 px-4 font-bold">Uploaded by</th>
               <th className="py-3 px-4 font-bold">Date</th>
               <th className="py-3 px-4 font-bold">Actions</th>
+
           </tr>
           </thead>
 
@@ -184,24 +199,35 @@ export default function Files({ leadId }: { leadId: string }) {
 
               {/* Uploaded by */}
               <td className="py-3 px-4 text-muted-foreground">
-                  {attachment.uploadedBy.name}
+                  {/* {attachment.uploadedBy.name} */}
+                  {attachment.uploadedBy?.name ?? "Unknown"}
               </td>
 
               {/* Date */}
               <td className="py-3 text-muted-foreground">
-                  {formatDistanceToNow(new Date(attachment.createdAt), {
+                  {/* {formatDistanceToNow(new Date(attachment.createdAt), {
                   addSuffix: true,
-                  })}
+                  })} */}
+                  {attachment.createdAt
+                    ? formatDistanceToNow(new Date(attachment.createdAt), {
+                        addSuffix: true,
+                      })
+                    : "-"}
               </td>
 
               {/* Actions */}
               <td className="py-3 px-4">
+                <div className="flex items-center gap-3">
                   <button
                   className="text-sm text-blue-400"
                   onClick={() => window.open(attachment.downloadUrl, "_blank")}
                   >
                   Download
                   </button>
+                    <Trash onClick={() => handleDelete(attachment.id)} className="w-4 h-4 cursor-pointer text-red-500 hover:text-red-600"/>
+                      
+
+                </div>
               </td>
               </tr>
           ))}

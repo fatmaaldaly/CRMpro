@@ -3,7 +3,7 @@
 import { ActivityType } from "@/generated/prisma/enums";
 import { getApiErrorMessage } from "@/lib/get-api-error-message";
 import { useGetLeadActivities } from "@/lib/tanstack/useActivities";
-import { Bell, Paperclip, Brain, CheckCircle, Phone, Pencil, PlusCircle, ArrowRight, LucideIcon, User } from "lucide-react";
+import { Bell, Paperclip, Brain, CheckCircle, Phone, Pencil, PlusCircle, ArrowRight, LucideIcon, User, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Pagination } from "../reusable";
@@ -85,6 +85,7 @@ const activityIcons: Record<ActivityType, LucideIcon> = {
   [ActivityType.ASSIGNMENT_CHANGE]: User,
   [ActivityType.REMINDER_CREATED]: Bell,
   [ActivityType.ATTACHMENT_ADDED]: Paperclip,
+  [ActivityType.ATTACHMENT_DELETED]: Trash2,
   [ActivityType.AI_LEAD_BRIEF_GENERATED]: Brain,
   [ActivityType.AI_FOLLOWUP_DRAFT_GENERATED]: Brain,
 }
@@ -98,6 +99,7 @@ const activityLabels: Record<ActivityType, string> = {
   [ActivityType.ASSIGNMENT_CHANGE]: "Assignment Change",
   [ActivityType.REMINDER_CREATED]: "Reminder Created",
   [ActivityType.ATTACHMENT_ADDED]: "Attachment Added",
+  [ActivityType.ATTACHMENT_DELETED]: "Attachment Deleted",
   [ActivityType.AI_LEAD_BRIEF_GENERATED]: "AI Lead Brief Generated",
   [ActivityType.AI_FOLLOWUP_DRAFT_GENERATED]: "AI Followup Draft Generated",
 }

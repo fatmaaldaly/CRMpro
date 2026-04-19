@@ -72,16 +72,6 @@ export default function Login() {
             {/* Error Message */}
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <Button className="w-full" type="submit">Login</Button>
-            {/* <Button
-              type="button"
-              onClick={async () => {
-                const { data } = await supabase.auth.getSession();
-                console.log("access_token:", data.session?.access_token);
-                console.log("refresh_token:", data.session?.refresh_token);
-              }}
-            >
-              Get Token
-            </Button> */}
           </form>
         </CardContent>
       </Card>

@@ -57,9 +57,8 @@ export async function POST(
       leadId: id,
       actorId: profile.id,
       type: ActivityType.NOTE,
-      meta: {
-        content: validated.content,
-      },
+      content: validated.content,
+  
     }
     ]);
 

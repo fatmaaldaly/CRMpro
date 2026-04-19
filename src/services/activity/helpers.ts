@@ -7,20 +7,26 @@ import { ActivityType } from "@/generated/prisma/enums";
 // It always returns the same output for the same inputs
 export function buildActivityContent(
   activityType: ActivityType,
-  // meta:
-  //   | {
-  //       from: unknown;
-  //       to: unknown;
-  //     }
-  //   | undefined,
-  meta: Record<string, unknown> | undefined,
+  meta:
+    | {
+        from: unknown;
+        to: unknown;
+      }
+    | undefined,
+  content?: string,
 ) {
+  if (
+    activityType === ActivityType.NOTE ||
+    activityType === ActivityType.CALL_ATTEMPT ||
+    activityType === ActivityType.ATTACHMENT_ADDED ||
+    activityType === ActivityType.ATTACHMENT_DELETED
+  ) {
+    return content ?? null;
+  }
+
   if (!meta) {
     return null;
   }
-
-
-  console.log(meta);
 
   switch (activityType) {
     case ActivityType.STATUS_CHANGE:
@@ -29,10 +35,6 @@ export function buildActivityContent(
       return `Stage changed from ${meta.from} to ${meta.to}`;
     case ActivityType.ASSIGNMENT_CHANGE:
       return `Assignment changed from ${meta.from} to ${meta.to}`;
-    case ActivityType.NOTE:
-      return typeof meta === "object" && meta && "content" in meta
-        ? String(meta.content)
-        : null;
     default:
       return null;
   }

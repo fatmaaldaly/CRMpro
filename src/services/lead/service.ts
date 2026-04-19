@@ -1,6 +1,6 @@
 import { ActivityType, Prisma, Profile, Role } from "@/generated/prisma/client";
-import { CreateLeadRequest, EditLeadRequest, ListLeadsParams } from "./schema";
-import { dbCreateLead, dbGetLeadById, dbListLeads, dbUpdateLead } from "./db";
+import { CreateLeadRequest, EditLeadRequest, ListLeadsParams, ReassignLeadsRequest } from "./schema";
+import { dbCreateLead, dbGetAssignedLeads, dbGetLeadById, dbGetTargetAgent, dbListLeads, dbReassignLeads, dbUpdateLead } from "./db";
 import { buildLeadChangeActivities } from "./helpers";
 import { canEditLeadAssignment, canEditLeadContactFields } from "./permissions";
 import { ActivityService } from "../activity";
@@ -117,3 +117,52 @@ export async function updateLead(
 
   return result;
 }
+
+
+
+export async function reassignLeads(
+  actor: Profile,
+  data: ReassignLeadsRequest,
+) {
+  const { leadIds} = data;
+
+  // Target must be an active agent. Reassigning to a deactivated user
+  // or to a manager/admin is rejected.
+  const targetAgent = await dbGetTargetAgent(data);
+
+  if (!targetAgent) {
+    throw new LeadServiceError("Target agent not found", 404);
+  }
+
+  // All leads must exist. A bogus id in the batch fails the entire
+  // operation rather than silently reassigning the rest. We also need
+  // the current assignee name so each ASSIGNMENT_CHANGE activity can
+  // record its from/to.
+  const existing = await dbGetAssignedLeads(data);
+
+  if (existing.length !== leadIds.length) {
+    throw new LeadServiceError("One or more leads not found", 404);
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await dbReassignLeads(data);
+    const activities = existing.map((lead) => ({
+      leadId: lead.id,
+      actorId: actor.id,
+      type: ActivityType.ASSIGNMENT_CHANGE,
+      meta: {
+        from: lead.assignedTo?.name ?? "Unassigned",
+        to: targetAgent.name,
+      },
+    }));
+
+    const result = await ActivityService.create(activities, tx);
+    if (!result.success) {
+      throw new Error("Failed to create reassignment activities");
+    }
+  });
+
+  return { count: leadIds.length };
+}
+
+

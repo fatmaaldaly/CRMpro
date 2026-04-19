@@ -62,3 +62,12 @@ export interface ListLeadsResponseData {
   leads: LeadSummary[];
   pagination: PaginationMeta;
 }
+
+
+export const reassignLeadsSchema = z.object({
+  leadIds: z.array(z.uuid()).min(1),
+  assignToId: z.uuid(),
+});
+
+
+export type ReassignLeadsRequest = z.infer<typeof reassignLeadsSchema>;

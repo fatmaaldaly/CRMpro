@@ -6,9 +6,11 @@ import {
   LeadDetail,
   ListLeadsParams,
   ListLeadsResponseData,
+  ReassignLeadsRequest,
 } from "./schema";
 import { Prisma, Profile, Role } from "@/generated/prisma/client"; // Prisma → types like LeadWhereInput, TransactionClient
 import { buildPagination } from "@/utils/pagination";
+
 
 
 // Select Objects, These define which fields to fetch from the db
@@ -118,4 +120,50 @@ export async function dbUpdateLead(
   });
 
   return updatedLead;
+}
+
+
+export async function dbGetTargetAgent(
+  data: ReassignLeadsRequest) {
+  const {assignToId} = data;
+  return prisma.profile.findFirst({
+    where: {
+      id: assignToId,
+      role: Role.AGENT,
+      isActive: true
+    },
+    select: {
+      id: true,
+      name: true,
+    }
+  });
+}
+
+
+export async function dbGetAssignedLeads( 
+  data: ReassignLeadsRequest) {
+  const {leadIds} = data;
+  return prisma.lead.findMany({
+    where: { id: { in: leadIds } },
+    select: {
+      id: true,
+      assignedTo: { select: { name: true } },
+    },    
+  })
+
+}
+
+
+export async function dbReassignLeads(
+  data: ReassignLeadsRequest,
+  tx?: Prisma.TransactionClient) {
+  
+  const {leadIds, assignToId} = data;
+  const client = tx ?? prisma;
+  const lead = client.lead.updateMany({
+     where: { id: { in: leadIds } },
+     data: { assignedToId: assignToId }, 
+  });
+  return lead;
+  
 }

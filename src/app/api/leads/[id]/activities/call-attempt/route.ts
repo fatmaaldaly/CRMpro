@@ -26,9 +26,8 @@ export async function POST(
         leadId: id,
         actorId: profile.id,
         type: "CALL_ATTEMPT",
-        meta: {
-            content: content,
-        },
+        content: content,
+      
         }
     ]); 
     // Return success
