@@ -46,6 +46,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Role } from "@/generated/prisma/enums";
+import { getApiErrorMessage } from "@/lib/get-api-error-message";
 
 
 
@@ -84,8 +85,8 @@ export function UserActions({ user }: { user: User }) {
         toast.success("User updated successfully.");
         setShowEditDialog(false);
       },
-      onError: () => {
-        toast.error("Failed to update user.");
+      onError: (err) => {
+        toast.error(getApiErrorMessage(err, "Failed to update user"))
       },
     });
   }

@@ -127,3 +127,73 @@ export async function dbGetTopAgents(limit = 5) {
     .sort((a, b) => b.wonCount - a.wonCount)
     .slice(0, limit);
 }
+
+
+
+export async function dbGetAverageCloseTime() {
+  const closedLeads = await prisma.lead.findMany({
+    where: { status: "WON" },
+    select: {
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  if (closedLeads.length === 0) return 0;
+
+  const totalDays = closedLeads.reduce((sum, lead) => {
+    const diff =
+      new Date(lead.updatedAt).getTime() -
+      new Date(lead.createdAt).getTime();
+
+    return sum + diff;
+  }, 0);
+
+  return totalDays / closedLeads.length / (1000 * 60 * 60 * 24);
+}
+
+
+
+export async function dbGetAgentLeaderboard() {
+  const agents = await prisma.profile.findMany({
+    where: { role: "AGENT", isActive: true },
+    select: {
+      id: true,
+      name: true,
+      leads: {
+        select: { status: true },
+      },
+    },
+  });
+
+  return agents.map((agent) => {
+    const total = agent.leads.length;
+    const won = agent.leads.filter((l) => l.status === "WON").length;
+    const conversion = total === 0 ? 0 : (won / total) * 100;
+
+    return {
+      name: agent.name,
+      totalLeads: total,
+      wonLeads: won,
+      conversionRate: conversion,
+    };
+  });
+}
+
+
+export async function dbGetStuckLeads(days: number) {
+  const date = new Date();
+  date.setDate(date.getDate() - days);
+  const result = await prisma.lead.groupBy({
+    by: ["stage"],
+    where: {
+      updatedAt: { lt: date },
+      status: LeadStatus.OPEN,
+    },
+    _count: {_all: true},
+  })
+  return result.map((item) => ({
+    stage: item.stage,
+    count: item._count._all,
+  }));
+}

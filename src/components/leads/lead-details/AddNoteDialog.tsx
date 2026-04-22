@@ -14,6 +14,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { getApiErrorMessage } from "@/lib/get-api-error-message";
 import { useCreateNote } from "@/lib/tanstack/useActivities";
+import { toast } from "sonner";
 
 
 
@@ -40,7 +41,7 @@ export function AddNoteDialog({ leadId }: { leadId: string }) {
 
     try {
       await createNote.mutateAsync(content);
-
+      toast.success("note created successfully");
       resetForm();
       setOpen(false);
     } catch (mutationError) {

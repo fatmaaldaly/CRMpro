@@ -10,6 +10,7 @@ import ByStageBreakdown from "./ByStageBreakdown";
 import ByStatusBreakdown from "./ByStatusBreakdown";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
+
 // comparison between this week and last week: 
 // if last week had 0 new leads, we can't calculate a % change, so we return null 
 // Otherwise, we calculate the % change normally
@@ -25,6 +26,8 @@ function formatWeekOverWeekSubtext(
 
 export function DashboardPageClient({ role }: { role: Role }) {
   const { data, isLoading, error } = useDashboardOverview();
+
+
   // useMemo avoids recalculating layout logic on every render.
   const { subHeaderText, secondRowGridStyle } = useMemo(() => {
     if (role === "AGENT") {
@@ -39,13 +42,16 @@ export function DashboardPageClient({ role }: { role: Role }) {
     }
     // Recompute only when role changes
   }, [role]);
-
-  if (isLoading) return <div>Loading...</div>;
+  
+  if (isLoading) 
+    return <div className="p-4 text-sm text-muted-foreground">Loading dashboard...</div>;
   if (error || !data)
-    return <div>Error: {error?.message ?? "Unknown error"}</div>;
+    return <div  className="p-4 text-sm text-red-500">Error: {error?.message ?? "Unknown error"}</div>;
 
   return (
     <div className="space-y-6 p-4 md:p-6">
+      {role === "AGENT" || role === "ADMIN" && (
+        <>
       <div className="space-y-1">
         <h1 className="text-3xl font-semibold tracking-tight">Dashboard</h1>
         <p className="text-sm text-muted-foreground">{subHeaderText}</p>
@@ -80,7 +86,7 @@ export function DashboardPageClient({ role }: { role: Role }) {
           icon={<AlertCircle className="h-4 w-4 text-muted-foreground" />}
         />
       </div>
-
+    
       {/* cn(): merges tailwind classess safely */}
       <div className={cn("grid gap-4", secondRowGridStyle)}>
         <ByStageBreakdown data={data.totalLeadsByStage} />
@@ -101,7 +107,15 @@ export function DashboardPageClient({ role }: { role: Role }) {
             </CardContent>
           </CardHeader>
         </Card>) : <></>}
-      </div>    
+      </div> 
+      </>
+      )}
+
+
+      {/* ================= MANAGER REPORTS ================= */}
+      {/* {role !== "AGENT" && role !== "ADMIN" && (
+        <ManagerReport role={role} />
+      )} */}
    </div>
   );
 }

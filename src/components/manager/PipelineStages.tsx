@@ -6,7 +6,7 @@ import { BarChart, XAxis, Bar, CartesianGrid } from "recharts"
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart"
 
 // returns only the type of totalLeadsByStage from the full dashboard response
-const ByStageBreakdown = ({ data }: { data: DashboardData["totalLeadsByStage"] }) => {
+const PipelineStages = ({ data }: { data: DashboardData["totalLeadsByStage"] }) => {
   // theme & metadata
   const chartConfig = {
     stage: {
@@ -18,7 +18,7 @@ const ByStageBreakdown = ({ data }: { data: DashboardData["totalLeadsByStage"] }
   return (
     <Card className="grid-cols-1">
       <CardHeader>
-        <CardTitle>Leads by Stage</CardTitle>
+        <CardTitle>Pipeline Stages</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -42,4 +42,4 @@ const ByStageBreakdown = ({ data }: { data: DashboardData["totalLeadsByStage"] }
     </Card>
   )
 }
-export default ByStageBreakdown
+export default PipelineStages;

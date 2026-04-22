@@ -28,7 +28,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
   return (
     <QueryProvider>
       <SidebarProvider>
-        <AppSidebar role={profile.role} user={profile} />
+        <AppSidebar role={profile.role} user={profile} userSnapshot={profile} />
         <AppShell role={profile.role} email={profile.email}>
           {children}
         </AppShell>

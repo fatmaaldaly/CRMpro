@@ -224,8 +224,14 @@ const handleDelete = (attachmentId: string) => {
                   >
                   Download
                   </button>
-                    <Trash onClick={() => handleDelete(attachment.id)} className="w-4 h-4 cursor-pointer text-red-500 hover:text-red-600"/>
-                      
+                    {/* <Trash onClick={() => handleDelete(attachment.id)} className="w-4 h-4 cursor-pointer text-red-500 hover:text-red-600"/> */}
+                  <button
+                    onClick={() => handleDelete(attachment.id)}
+                    className="text-red-500 hover:text-red-600"
+                    aria-label="Delete file"
+                  >
+                    <Trash className="w-4 h-4" />
+                  </button> 
 
                 </div>
               </td>

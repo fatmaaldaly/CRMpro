@@ -8,6 +8,9 @@ import {
   dbGetTotalLeadsByStage,
   dbGetTotalLeadsByStatus,
   dbGetWonAndTotalLeads,
+  dbGetAgentLeaderboard,
+  dbGetAverageCloseTime,
+  dbGetStuckLeads,
 } from "./db";
 import { startOfUtcWeekSunday } from "./helpers";
 
@@ -92,5 +95,49 @@ export async function getDashboardData(user: UserSnapshot) {
       total: conversionTotal,
     },
     ...(user.role !== Role.AGENT && { topAgents }),
+  };
+}
+
+
+export async function getManagerReport(user: UserSnapshot) {
+  // only manager/admin allowed
+  if (user.role === Role.AGENT) {
+    throw new DashboardServiceError("Unauthorized", 403);
+  }
+
+  const where = {};
+
+  const [
+    totalLeads,
+    totalLeadsByStage,
+    totalLeadsByStatus,
+    overdueRemindersCount,
+    stuckLeads,
+    leaderboard,
+    avgCloseTime,
+    { total: conversionTotal, won: conversionWon },
+  ] = await Promise.all([
+    dbGetTotalLeads(where),
+    dbGetTotalLeadsByStage(where),
+    dbGetTotalLeadsByStatus(where),
+    dbGetOverdueRemindersCount(where),
+    dbGetStuckLeads(3),
+    dbGetAgentLeaderboard(),
+    dbGetAverageCloseTime(),
+    dbGetWonAndTotalLeads(where),
+  ]);
+
+  const conversionRate =
+    conversionTotal === 0 ? 0 : (conversionWon / conversionTotal) * 100;
+
+  return {
+    totalLeads,
+    conversionRate,
+    overdueRemindersCount,
+    stuckLeads,
+    leaderboard,
+    avgCloseTime,
+    totalLeadsByStage,
+    totalLeadsByStatus,
   };
 }

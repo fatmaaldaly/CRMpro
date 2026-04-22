@@ -8,6 +8,7 @@ import supabase from "@/lib/supabase/client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,12 +16,12 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async (e: React.SubmitEvent) => {
+  const handleLogin = async (e: React.SubmitEvent)=> {
     e.preventDefault()
     setError("")
     setLoading(true)
 
-    const {error: authError } = await supabase.auth.signInWithPassword({
+    const {error: authError} = await supabase.auth.signInWithPassword({
       email,
       password
     })
@@ -33,12 +34,28 @@ export default function Login() {
       return
     }
 
-    router.push("/dashboard");
-    router.refresh()
-    setLoading(false)
+    const res = await fetch("/api/user");
+    const user = await res.json();
+
+  if (!res.ok) {
+    setError(user.error || "Failed to load user");
+    setLoading(false);
+    return;
   }
 
 
+  // redirect based on role
+  if (user.role === "MANAGER") {
+    router.push("/report");
+  } else {
+    router.push("/dashboard");
+  }
+
+  router.refresh();
+  setLoading(false);
+
+  }    
+   
 
   return (
     <div className="flex justify-center items-center h-screen w-screen">

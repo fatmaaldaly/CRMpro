@@ -145,11 +145,11 @@ export function RemindersPageClient() {
         </div>
       ) : isError ? (
         <div className="py-12 text-center text-sm text-destructive">
-          Failed to load reminders.
+          Failed to load reminders. 
         </div>
       ) : reminders.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-slate-200 bg-white/80 p-8 text-center text-sm text-slate-500">
-          No reminders found.
+          No reminders found. Create a reminder.
         </div>
       ) : (
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -254,7 +254,6 @@ export function RemindersPageClient() {
     </div>
   );
 }
-
 
 
 

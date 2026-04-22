@@ -43,8 +43,8 @@ export async function DELETE(
     const { id: leadId, attachmentId } = await params;
 
     const result = await AttachmentService.deleteForLead(
-      leadId,
       attachmentId,
+      leadId,
       profile,
     );
 

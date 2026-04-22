@@ -1,6 +1,8 @@
 "use client"
 
 import { Profile, Role } from "@/generated/prisma/client"
+// import { RoleHelper, UserSnapshotHelper } from "@/utils/types/helper"
+import { UserSnapshot } from "@/utils/types/user";
 import { Calendar, Download, LayoutDashboard, Upload, User, Users } from "lucide-react"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar"
 import { Separator } from "./ui/separator"
@@ -9,11 +11,23 @@ import { usePathname } from "next/navigation"
 import { NavUser } from "./app-sidebar-footer"
 import { formatRoleLabel } from "./app-shell-config"
 
-const mainSidebarItems = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Leads", href: "/leads", icon: Users },
-  { label: "Reminders", href: "/reminders", icon: Calendar }
-]
+// const mainSidebarItems = [
+//   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+//   { label: "Leads", href: "/leads", icon: Users },
+//   { label: "Reminders", href: "/reminders", icon: Calendar }
+  
+// ]
+
+//   const mainSidebarItems = [
+//   {
+//     label: role === Role.MANAGER ? "Reports" : "Dashboard",
+//     href: role === Role.MANAGER ? "/reports" : "/dashboard",
+//     icon: LayoutDashboard,
+//   },
+//   { label: "Leads", href: "/leads", icon: Users },
+//   { label: "Reminders", href: "/reminders", icon: Calendar },
+// ];
+
 
 const adminSidebarItems = [
   { label: "Users", href: "/admin/users", icon: User },
@@ -21,8 +35,18 @@ const adminSidebarItems = [
   { label: "Export Leads", href: "/admin/export", icon: Download },
 ]
 
-export function AppSidebar({ role, user }: { role: Role, user: Profile }) {
+export function AppSidebar({ userSnapshot, user, role }: { userSnapshot: UserSnapshot, user: Profile, role: Role}) {
   const pathname = usePathname()
+  const roleSidebar = userSnapshot.role;
+  const mainSidebarItems = [
+  {
+    label: roleSidebar === "MANAGER" ? "Report" : "Dashboard",
+    href: roleSidebar === "MANAGER" ? "/report" : "/dashboard",
+    icon: LayoutDashboard,
+  },
+  { label: "Leads", href: "/leads", icon: Users },
+  { label: "Reminders", href: "/reminders", icon: Calendar },
+];
 
   const isActive = (href: string) => {
     return pathname === href

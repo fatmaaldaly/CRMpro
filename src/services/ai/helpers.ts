@@ -8,6 +8,7 @@ import {
 } from "./db";
 import { UserSnapshot } from "@/utils/types/user";
 
+
 // Awaited<ReturnType<…>> ensures the type matches what the async DB function returns after the promise resolves
 type LeadContext = Awaited<ReturnType<typeof dbGetLeadWithContext>>;
 type RecentActivities = Awaited<ReturnType<typeof dbGetRecentActivities>>;

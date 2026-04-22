@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -17,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCreateLead } from "@/lib/tanstack/useLeads";
 import { getApiErrorMessage } from "@/lib/get-api-error-message";
+import { toast } from "sonner";
 
 function getTextAreaClassName() {
   return "min-h-28 w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50";
@@ -51,6 +51,7 @@ export function CreateLeadDialog() {
         phone,
         note: note || undefined,
       });
+      toast.success("Lead created")
 
       resetForm();
       setOpen(false);
@@ -78,9 +79,6 @@ export function CreateLeadDialog() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create New Lead</DialogTitle>
-          <DialogDescription>
-            Add a new lead with the basic details from the homework brief.
-          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 px-6 py-5">

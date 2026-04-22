@@ -91,6 +91,7 @@ export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) 
             <Input
               id="create-user-email"
               type="email"
+              autoFocus
               autoComplete="email"
               value={form.email}
               onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
@@ -126,7 +127,7 @@ export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) 
             </Select>
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <Button variant="outline" onClick={() => handleOpenChange(false)}>
+            <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
               Cancel
             </Button>
             <Button

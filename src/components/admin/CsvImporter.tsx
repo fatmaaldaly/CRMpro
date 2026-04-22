@@ -110,6 +110,14 @@ export function CSVImporter() {
   const invalidCount = results.length - validCount;
   const previewRows = validResults.slice(0, PREVIEW_ROW_LIMIT);
 
+  if (state === "validated" && results.length > 0 && validCount === 0) {
+  return (
+    <div className="rounded-md border p-8 text-center text-sm text-muted-foreground">
+      No valid CSV data found. Please check your file format.
+    </div>
+  );
+}
+
   return (
     <div className="space-y-6">
       {/* --- File Upload Area --- */}
@@ -122,7 +130,7 @@ export function CSVImporter() {
           className="hidden"
           id="csv-file-input"
         />
-        <label htmlFor="csv-file-input" className="cursor-pointer space-y-2">
+        <label htmlFor="csv-file-input" className="cursor-pointer focus:outline-none focus:ring-2">
           <Upload className="mx-auto h-8 w-8 text-muted-foreground" />
           <div className="text-sm font-medium">
             {state === "parsing"

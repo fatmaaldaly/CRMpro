@@ -23,6 +23,7 @@ import { useCreateLeadReminder } from "@/lib/tanstack/useReminders";
 import type { CallFollowUp } from "@/services/ai/schema";
 import { Sparkles } from 'lucide-react';
 import FollowupReview from "./FollowupReview";
+import { toast } from "sonner";
 
 
 function getTextAreaClassName() {
@@ -45,8 +46,6 @@ export default function LogCallDialog({ leadId }: { leadId: string }) {
     const saveCallFollowUp = useSaveCallFollowUp(leadId);
 
 
-
-
   function resetForm() {
         setOutcome("");
         setDuration("");
@@ -65,6 +64,7 @@ export default function LogCallDialog({ leadId }: { leadId: string }) {
          outcome: outcome as "NO_ANSWER" | "ANSWERED" | "WRONG_NUMBER" | "BUSY" | "CALL_BACK_LATER",
          notes: note || undefined,
         });
+        toast.success("Call logged successfully");
         setStep("suggest");
 
         } catch (mutationError) {
@@ -89,6 +89,7 @@ export default function LogCallDialog({ leadId }: { leadId: string }) {
           callOutcome: outcome,
           agentNotes: note || undefined,
         });
+        toast.success("AI suggestion generated");
         setCallFollowUp(result);
         setStep("review");
       } catch (mutationError) {
@@ -97,35 +98,36 @@ export default function LogCallDialog({ leadId }: { leadId: string }) {
     }
 
 
-function handleCreateReminder() {
-  const followup = generateCallFollowup.data;
-  if (!followup) return;
+    function handleCreateReminder() {
+      const followup = callFollowUp;
+      if (!followup) return;
 
-  setError("");
+      setError("");
 
-  // save to db
-  saveCallFollowUp.mutate(followup, {
-    onSuccess: () => {
-      // then create reminder
-      createReminder.mutate({
-        leadId,
-        title: followup.suggestedReminder.title,
-        note: followup.suggestedReminder.note,
-        dueAt: new Date(followup.suggestedReminder.suggestedDueAt),
-      },
-      
-     {
+      // save to db
+      saveCallFollowUp.mutate(followup, {
         onSuccess: () => {
-          handleOpenChange(false);
+          // then create reminder
+          createReminder.mutate({
+            leadId,
+            title: followup.suggestedReminder.title,
+            note: followup.suggestedReminder.note,
+            dueAt: new Date(followup.suggestedReminder.suggestedDueAt),
+          },
+          
+          {
+            onSuccess: () => {
+              toast.success("Reminder created successfully");
+              handleOpenChange(false);
+            },
+          },);
+          
         },
-        },);
-      
-    },
-    onError: (err) => {
-      setError(getApiErrorMessage(err, "Failed to save follow-up"));
-    },
-  });
-}
+        onError: (err) => {
+          setError(getApiErrorMessage(err, "Failed to save follow-up"));
+        },
+      });
+    }
 
 
     function handleDiscard() {

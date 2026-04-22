@@ -19,7 +19,7 @@ export const Timeline = ({ leadId }: { leadId: string }) => {
   })
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Loading timeline...</div>;
   }
 
   if (isError) {

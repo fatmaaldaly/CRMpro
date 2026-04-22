@@ -19,7 +19,7 @@ const roleBadgeVariant: Record<string, "default" | "info" | "outline"> = {
 const UsersTable = () => {
     const [page, setPage] = useState(1);
     const pageSize = 10;
-    const { data, isLoading } = useUsers({ page, pageSize });
+    const { data, isLoading, isError } = useUsers({ page, pageSize });
     const usersList = data?.users ?? [];
     const pagination = data?.pagination;
     const startItem = pagination && pagination.total > 0? (pagination.page - 1) * pagination.pageSize + 1: 0;
@@ -29,7 +29,14 @@ const UsersTable = () => {
     const label = "Users";
 
 
+  if (isLoading) {
+  return <div className="p-4 text-sm text-muted-foreground">Loading users...</div>;
+  }
 
+  if (isError) {
+    return <div className="p-4 text-sm text-red-500">Failed to load users</div>;
+  }
+  
   if (usersList.length === 0) {
     return <div className="rounded-md border p-8 text-center text-muted-foreground">
       No users yet. Create one to get started.
