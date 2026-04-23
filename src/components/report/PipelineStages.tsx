@@ -3,10 +3,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { BarChart, XAxis, Bar, CartesianGrid } from "recharts"
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart"
-import { ManagerReport } from "@/services/dashboard/types";
+import { DashboardData } from "@/services/dashboard/types";
 
 // returns only the type of totalLeadsByStage from the full dashboard response
-const PipelineStages = ({ data }: { data: ManagerReport["totalLeadsByStage"] }) => {
+const PipelineStages = ({ data }: { data: DashboardData["totalLeadsByStage"] }) => {
   console.log("PIPELINE DATA:", data);
   // theme & metadata
   const chartConfig = {
