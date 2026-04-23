@@ -1,12 +1,13 @@
 "use client";
 // renders a bar chart using Recharts inside a styled UI card.
-import { DashboardData } from "@/services/dashboard"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { BarChart, XAxis, Bar, CartesianGrid } from "recharts"
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart"
+import { ManagerReport } from "@/services/dashboard/types";
 
 // returns only the type of totalLeadsByStage from the full dashboard response
-const PipelineStages = ({ data }: { data: DashboardData["totalLeadsByStage"] }) => {
+const PipelineStages = ({ data }: { data: ManagerReport["totalLeadsByStage"] }) => {
+  console.log("PIPELINE DATA:", data);
   // theme & metadata
   const chartConfig = {
     stage: {

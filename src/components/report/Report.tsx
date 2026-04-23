@@ -11,7 +11,7 @@ export function Report({ role }: { role: Role }) {
   const { data: report } = useManagerReport();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4">
 
       {role !== "AGENT" && report && (
         <div className="space-y-6 mt-8">

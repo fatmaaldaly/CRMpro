@@ -105,9 +105,7 @@ export async function getManagerReport(user: UserSnapshot) {
     throw new DashboardServiceError("Unauthorized", 403);
   }
   
-  const where = {
-  ...(user.role === Role.MANAGER && { assignedToId: user.id }),
-};
+   const where = {};
 
   const [
     totalLeads,
