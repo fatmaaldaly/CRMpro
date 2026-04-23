@@ -4,7 +4,6 @@ export function buildStoragePath(leadId: string, fileName: string) {
 }
 
 
-// format file size
 export function formatFileSize(bytes: number): string {
  if (bytes < 1024) return `${bytes} B`;
  if (bytes < 1024 * 1024)

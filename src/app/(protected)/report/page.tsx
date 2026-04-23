@@ -1,5 +1,5 @@
 import { authenticateUser } from "@/utils/authenticateUser";
-import { Report } from "@/components/manager/Report";
+import { Report } from "@/components/report/Report";
 
 
 const ManagerPage = async () => {

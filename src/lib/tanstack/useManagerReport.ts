@@ -7,7 +7,7 @@ export function useManagerReport() {
   return useQuery<ManagerReport>({
       queryKey:["manager-report"],
       queryFn: async () => {
-          const {data} = await api.get(`reports/manager`);
+          const {data} = await api.get(`report/`);
           return data.data;
       },
   });

@@ -2,17 +2,11 @@
 
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
-
-import {
-  SidebarInset,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import {SidebarInset, SidebarTrigger,} from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
-import {
-  formatRoleLabel,
-  getProtectedPageMeta,
-} from "@/components/app-shell-config";
-import  NotificationBell  from "./notification-icon";
+import {formatRoleLabel, getProtectedPageMeta,} from "@/components/app-shell-config";
+import  {NotificationBell}  from "./notification-icon";
+
 
 export function AppShell({
   role,

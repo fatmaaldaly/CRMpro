@@ -7,8 +7,6 @@ import { useGetLead } from "@/lib/tanstack/useLeads";
 import { formatLeadDate, StatusBadge } from "@/components/leads/reusable";
 import { Overview } from "./lead-details/Overview";
 import { Timeline } from "./lead-details/Timeline";
-import { AddNoteDialog } from "./lead-details/AddNoteDialog";
-import LogCallDialog from "./lead-details/LogCallDialog";
 import {Reminders}from "./lead-details/Reminders";
 import { AI } from "./lead-details/AI";
 import Files from "./lead-details/Files";
@@ -46,10 +44,6 @@ export function LeadDetailClient({
         <div className="flex items-center gap-3">
           <h1 className="text-3xl font-semibold">{data.name}</h1>
           <StatusBadge status={data.status} />
-        </div>
-        <div className="gap-2 flex">
-          <AddNoteDialog leadId={id} />
-          <LogCallDialog leadId={id} />
         </div>
       </div>
 

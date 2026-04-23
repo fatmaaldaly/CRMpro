@@ -28,7 +28,6 @@ export function msToDays(ms: number) {
 }
 
 
-// AI Prompt (Manager Digest)
 export function buildManagerDigestPrompt(args: {
   stuckLeads: StuckLeads,
   totalLeads: TotalLeads,
@@ -51,18 +50,26 @@ Won Leads: ${wonLeads}
 Conversion Rate: ${conversionRate}%
 
 === PIPELINE BY STAGE ===
-${JSON.stringify(leadsByStage)}
+${leadsByStage.map(l => `${l.stage}: ${l.count}`).join("\n")}
 
-=== STUCK LEADS ===
-${JSON.stringify(stuckLeads)}
+=== STUCK LEADS (not updated recently) ===
+${stuckLeads.length 
+  ? stuckLeads.map(s => `${s.stage}: ${s.count}`).join("\n")
+  : "No stuck leads"}
 
 === AGENT PERFORMANCE ===
-${JSON.stringify(agentPerformance)}
+${agentPerformance.map(agent => {
+  const total = agent.leads.length;
+  const won = agent.leads.filter(l => l.status === "WON").length;
+  const rate = total ? ((won / total) * 100).toFixed(1) : 0;
+
+  return `${agent.name}: ${won}/${total} won (${rate}%)`;
+}).join("\n")}
 
 === TASK ===
 Return ONLY:
 
-1. summary (short overview of situation)
+1. summary (max 2 sentences, must mention key trend or change)
 2. insights (2-5 key findings)
 3. risks (max 4 risks or issues)
 4. recommendations (actionable steps)
@@ -71,7 +78,8 @@ Return ONLY:
 Rules:
 - Do NOT invent data
 - Be concise and actionable
-- Focus on business decisions, not generic text
+- Avoid generic phrases like "overall performance is good"
+- Use numbers when possible
 `;
 }
 
@@ -83,9 +91,14 @@ export function buildDigestEmail(digest: ManagerDigestRequest, name: string) {
     <h2> Daily CRM Digest</h2>
     <p>Good morning ${name}, here's your pipeline overview:</p>
 
+    <h3> Summary</h3>
+    <p>${digest.summary}</p>
+
     <h3> Insights</h3>
     <ul>
-      ${digest.insights.map(i => `<li>${i}</li>`).join("")}
+      ${digest.insights.length 
+      ? digest.insights.map(i => `<li>${i}</li>`).join("")
+      : "<li>No insights available</li>"}
     </ul>
 
     <h3> Risks</h3>

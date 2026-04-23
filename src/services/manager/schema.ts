@@ -1,8 +1,12 @@
 import { z } from "zod";
 
 
-// AI output
 export const ManagerDigestSchema = z.object({
+  summary: z
+    .string()
+    .max(300)
+    .describe("Short high-level overview of CRM performance"),
+    
   insights: z
     .array(z.string().max(200))
     .min(2)

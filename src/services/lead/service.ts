@@ -6,6 +6,7 @@ import { canEditLeadAssignment, canEditLeadContactFields } from "./permissions";
 import { ActivityService } from "../activity";
 import { prisma } from "@/lib/prisma";
 
+// Custom error class for 
 export class LeadServiceError extends Error {
   constructor(
     message: string,

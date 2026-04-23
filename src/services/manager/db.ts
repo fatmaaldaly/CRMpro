@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { LeadStatus, Role } from "@/generated/prisma/client";
+import { DigestStatus, LeadStatus, Role } from "@/generated/prisma/client";
+import { ManagerDigestRequest } from "./schema";
 
 
 // Show leads that are still open but inactive for X days
@@ -64,7 +65,7 @@ export async function dbGetAgentPerformance() {
 }
 
 
-export async function dbGetUserById() {
+export async function dbGetManagers() {
   return prisma.profile.findMany({
     where: {
       role: Role.MANAGER,
@@ -77,3 +78,35 @@ export async function dbGetUserById() {
   })
   
 }
+
+
+
+/* =========================================================
+   CREATE DIGEST
+========================================================= */
+export async function dbCreateDigest(content: ManagerDigestRequest) {
+  return prisma.managerDigest.create({
+    data: {
+      content,
+      status: DigestStatus.PENDING,
+    },
+  });
+}
+
+/* =========================================================
+   UPDATE STATUS
+========================================================= */
+export async function dbUpdateDigestStatus(
+  id: string,
+  status: "PENDING" | "SENT" | "FAILED",
+  sentAt?: Date
+) {
+  return prisma.managerDigest.update({
+    where: { id },
+    data: {
+      status,
+      ...(sentAt ? { sentAt } : {}),
+    },
+  });
+}
+

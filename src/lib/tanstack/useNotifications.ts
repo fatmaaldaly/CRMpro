@@ -10,7 +10,7 @@ export function useGetNotifications(params: ListNotificationsParams) {
   return useQuery({
     queryKey: ["notifications", params],
     queryFn: async (): Promise<ListNotificationsResponseData> => {
-      const { data } = await api.get("/leads/notifications", {
+      const { data } = await api.get("/notifications", {
         params,
       });
       return data.data;
@@ -24,7 +24,7 @@ export function useMarkNotificationRead() {
 
   return useMutation({
     mutationFn: async (id: string): Promise<NotificationListItem> => {
-      const { data } = await api.patch(`/leads/notifications/${id}/read`);
+      const { data } = await api.patch(`/notifications/${id}/read`);
       return data.data;
     },
     onSuccess: () => {

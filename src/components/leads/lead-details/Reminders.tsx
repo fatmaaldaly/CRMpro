@@ -12,6 +12,7 @@ import  CreateReminderDialog  from "@/components/reminders/CreateReminderDialog"
 import { format } from "date-fns";
 import { useState } from "react";
 
+
 function getReminderDisplayStatus(status: string, dueAt: string | Date) {
   if (status === "COMPLETED") return "completed";
   if (status === "CANCELLED") return "cancelled";

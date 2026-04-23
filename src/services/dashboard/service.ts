@@ -100,12 +100,14 @@ export async function getDashboardData(user: UserSnapshot) {
 
 
 export async function getManagerReport(user: UserSnapshot) {
-  // only manager/admin allowed
-  if (user.role === Role.AGENT) {
+  // only manager allowed
+  if (user.role === Role.AGENT || user.role === Role.ADMIN) {
     throw new DashboardServiceError("Unauthorized", 403);
   }
-
-  const where = {};
+  
+  const where = {
+  ...(user.role === Role.MANAGER && { assignedToId: user.id }),
+};
 
   const [
     totalLeads,

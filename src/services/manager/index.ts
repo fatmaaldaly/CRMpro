@@ -1,8 +1,9 @@
-import { generateManagerDigest, sendDigestEmails } from "./service";
+import { fireDigest, generateManagerDigest, sendDigestEmail } from "./service";
 
 
 export const DigestService = {
     generateManagerDigest,
-    sendDigestEmails,
+    sendDigestEmail,
+    fireDigest,
 
 } as const;

@@ -13,7 +13,8 @@ import {
   PopoverTrigger,
 } from "./ui/popover"
 
-export default function NotificationBell() {
+
+export function NotificationBell() {
   const [page, setPage] = useState(1)
   const pageSize = 10
   const { data, isLoading, isError } = useGetNotifications({ page, pageSize })

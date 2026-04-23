@@ -190,3 +190,19 @@ model Attachment {
 
   createdAt DateTime @default(now())
 }
+
+model ManagerDigest {
+  id String @id @default(uuid())
+
+  content Json
+  status  DigestStatus @default(PENDING)
+
+  createdAt DateTime  @default(now())
+  sentAt    DateTime?
+}
+
+enum DigestStatus {
+  PENDING
+  SENT
+  FAILED
+}

@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { ActivityService } from "../activity";
 import { ActivityType } from "@/generated/prisma/enums";
 
-// Custom error class for attachment operations.
+
 export class AttachmentServiceError extends Error {
   constructor(
     message: string,
