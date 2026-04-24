@@ -81,7 +81,7 @@ export async function scheduleDigest() {
   // create the schedule if not vreated before
   const result = await qstash.schedules.create({
     destination: `${process.env.NEXT_PUBLIC_API_URL}/api/digest`,
-    cron: "0 18 * * *", // minute hour day month weekday
+    cron: "0 8 * * *", // minute hour day month weekday
   });
 
   // Store that scheduling happened
