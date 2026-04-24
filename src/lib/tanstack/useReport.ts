@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "../api";
 
 
-export function useManagerReport() {
+export function useReport() {
   return useQuery<ManagerReport>({
       queryKey:["manager-report"],
       queryFn: async () => {

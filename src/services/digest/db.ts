@@ -80,10 +80,6 @@ export async function dbGetManagers() {
 }
 
 
-
-/* =========================================================
-   CREATE DIGEST
-========================================================= */
 export async function dbCreateDigest(content: ManagerDigestRequest) {
   return prisma.managerDigest.create({
     data: {
@@ -93,9 +89,7 @@ export async function dbCreateDigest(content: ManagerDigestRequest) {
   });
 }
 
-/* =========================================================
-   UPDATE STATUS
-========================================================= */
+
 export async function dbUpdateDigestStatus(
   id: string,
   status: "PENDING" | "SENT" | "FAILED",

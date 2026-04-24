@@ -1,4 +1,4 @@
-import { DigestService } from "@/services/manager";
+import { DigestService } from "@/services/digest";
 import { handleRouteError } from "@/utils/handleRouteError";
 import { NextResponse } from "next/server";
 

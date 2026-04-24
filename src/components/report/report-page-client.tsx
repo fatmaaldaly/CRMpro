@@ -3,12 +3,12 @@
 import { AlertCircle, Percent, Users } from "lucide-react";
 import KpiCard from "./KpiCard";
 import { Role } from "@/generated/prisma/enums";
-import { useManagerReport } from "@/lib/tanstack/useManagerReport";
+import { useReport } from "@/lib/tanstack/useReport";
 import StuckLeadsChart from "./StuckLeadsChart";
 import PipelineStages from "./PipelineStages";
 
 export function Report({ role }: { role: Role }) {
-  const { data: report } = useManagerReport();
+  const { data: report } = useReport();
 
   return (
     <div className="space-y-6 p-4">

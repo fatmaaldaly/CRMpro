@@ -1,8 +1,17 @@
-// /api/schedule-digest/route.ts
-import { scheduleDigest } from "@/services/manager/service";
+import { DigestService } from "@/services/digest/index";
+import { handleRouteError } from "@/utils/handleRouteError";
 import { NextResponse } from "next/server";
 
+
 export async function GET() {
-  const result = await scheduleDigest();
-  return NextResponse.json(result);
+  
+  try{
+    const result = await DigestService.scheduleDigest();
+    
+    return NextResponse.json({success: true, data: result});
+    
+  }catch(error){
+    return handleRouteError(error);
+  }
+  
 }

@@ -16,7 +16,6 @@ import { ActivityType } from "@/generated/prisma/client";
 import { Profile } from "@/generated/prisma/client";
 
 
-
 export async function generateLeadBrief(
   leadId: string,
   user: Profile,
