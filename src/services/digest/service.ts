@@ -80,7 +80,7 @@ export async function scheduleDigest() {
   }
   // create the schedule if not vreated before
   const result = await qstash.schedules.create({
-    destination: `${process.env.NEXT_PUBLIC_API_URL}/api/digest`,
+    destination: `${process.env.NEXT_PUBLIC_API_URL}/digest`,
     cron: "0 8 * * *", // minute hour day month weekday
   });
 
@@ -110,6 +110,7 @@ export const fireDigest = async () => {
 
   // 1. generate AI digest 
   const digest = await generateManagerDigest();
+  console.log("Digest generated:", digest);
 
   // 2. save digest in DB
   const digestRecord = await dbCreateDigest(digest);
