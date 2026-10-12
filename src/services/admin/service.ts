@@ -244,7 +244,8 @@ export async function resendInvite(targetUserId: string) {
   const { data: magicLinkData, error: magicLinkError } =
     await supabaseAdmin.auth.admin.generateLink({
       type: "magiclink",
-      email: user.email,
+      // email: user.email,
+       email: "fatimaaldaly05@gmail.com",
     });
 
   // resend email
@@ -257,7 +258,8 @@ export async function resendInvite(targetUserId: string) {
 
   await resend.emails.send({
     from: "name@company.com",
-    to: user.email,
+    to: "fatimaaldaly05@gmail.com",
+    // to: user.email,
     subject: "You're invited to CRM Pro",
     html: generateInviteEmailHTML(user.name, magicLink),
   });
