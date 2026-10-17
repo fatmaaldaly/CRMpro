@@ -91,9 +91,10 @@ export async function dbCreateCallFollowUp(
 }
 
 export async function dbGetLastLeadBrief(leadId: string) {
-  return await prisma.aILeadBrief.findFirst({
+  const rows = await prisma.aILeadBrief.findMany({
     where: { leadId },
     orderBy: { createdAt: "desc" },
+    take: 20,
     select: {
       id: true,
       leadId: true,
@@ -103,4 +104,12 @@ export async function dbGetLastLeadBrief(leadId: string) {
       createdById: true,
     },
   });
+
+  // call follow-ups share this table (brief.type === "call_followup"), skip them
+  return (
+    rows.find((row) => {
+      const brief = row.brief as { type?: string } | null;
+      return brief?.type !== "call_followup";
+    }) ?? null
+  );
 }
