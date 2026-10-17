@@ -11,7 +11,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
   // Check authentication
   const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect("/login")
+  if (!user) redirect("/")
 
   // Fetch the user profile
   const profile = await prisma.profile.findUnique({
@@ -22,7 +22,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
 
   if (!profile || !profile.isActive) {
     await supabase.auth.signOut()
-    redirect("/login")
+    redirect("/")
   }
 
   return (

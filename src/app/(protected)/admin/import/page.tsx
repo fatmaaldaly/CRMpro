@@ -18,7 +18,7 @@ export default async function AdminImportPage() {
   const supabase = await createSupabaseServerClient();
   // gets the currently logged-in user
   const {data: { user },} = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  if (!user) redirect("/");
   
   // 2) Authorization (role check)
   // Fetches the user profile from Prisma

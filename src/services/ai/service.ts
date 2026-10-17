@@ -52,7 +52,7 @@ export async function generateLeadBrief(
   // generateText is the AI function that creates the lead brief
   const { output } = await generateText({
     // specifies which AI model to use
-    model: "deepseek/deepseek-v3.2-thinking",
+    model: "google/gemini-2.5-flash",
     // tells the AI to format its output according to the leadBriefSchema 
     output: Output.object({ schema: leadBriefSchema }),
     prompt,
@@ -113,10 +113,11 @@ export async function generateCallFollowup(
     recentActivities: activities,
     callOutcome,
     agentNotes,
+    agentName: user.name,
   });
 
   const { output } = await generateText({
-    model: "deepseek/deepseek-v3.2-thinking",
+    model: "google/gemini-2.5-flash",
     output: Output.object({ schema: callFollowUpSchema }),
     prompt,
   });

@@ -47,7 +47,7 @@ export async function generateManagerDigest() {
 
   const { output } = await generateText({
     
-    model: "deepseek/deepseek-v3.2-thinking",
+    model: "google/gemini-2.5-flash",
     output: Output.object({ schema: ManagerDigestSchema }),
     prompt,
   });  

@@ -1,23 +1,26 @@
 import { z } from "zod";
 
 export const leadBriefSchema = z.object({
+  // no hard character limits: models treat them as hints and a slightly long
+  // item would fail the whole brief, so length is asked for in the descriptions
   summary: z
     .string()
-    .max(1000)
     .describe(
-      "A brief summary of the lead's situation based on activity history.",
+      "A brief summary of the lead's situation based on activity history, 2-3 sentences.",
     ),
   keyFacts: z
-    .array(z.string().max(100))
+    .array(z.string())
     .min(2)
     .max(5)
     .describe(
-      "2-5 bullet points about the lead (stage, activity pattern, engagement level, etc.)",
+      "2-5 short bullet points about the lead (stage, activity pattern, engagement level, etc.), each one sentence under 100 characters",
     ),
   risks: z
-    .array(z.string().max(100))
+    .array(z.string())
     .max(3)
-    .describe("up to 3 risks the lead is facing or objections"),
+    .describe(
+      "up to 3 risks the lead is facing or objections, each one sentence under 100 characters",
+    ),
   nextActions: z
     .array(
       z.object({

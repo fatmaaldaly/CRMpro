@@ -7,7 +7,7 @@ export default async function AdminUsersPage() {
   // Check authentication
   const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect("/login")
+  if (!user) redirect("/")
 
   // Fetch the user profile
   const profile = await prisma.profile.findUnique({
@@ -18,7 +18,7 @@ export default async function AdminUsersPage() {
 
   if (!profile || !profile.isActive) {
     await supabase.auth.signOut()
-    redirect("/login")
+    redirect("/")
   }
 
   if (profile.role !== "ADMIN") redirect("/dashboard")

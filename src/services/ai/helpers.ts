@@ -89,12 +89,16 @@ export function buildCallFollowupPrompt(args: {
   recentActivities: RecentActivities;
   callOutcome: CallOutcome;
   agentNotes?: string | null;
+  agentName: string;
 }): string {
-  const { leadContext, recentActivities, callOutcome, agentNotes } = args;
+  const { leadContext, recentActivities, callOutcome, agentNotes, agentName } = args;
   const leadContextText = formatLeadContext(leadContext);
   const recentActivitiesText = formatRecentActivities(recentActivities);
 
   return `You are a sales coach. A sales agent just completed a call with a lead. Based ONLY on the data provided below, suggest a follow-up strategy. Do not invent facts about the lead or their needs.
+
+=== THE AGENT ===
+Name: ${agentName} (this is the person making the next call)
 
 === LEAD DATA ===
 ${leadContextText}
@@ -114,7 +118,9 @@ Suggest:
 4. The single most important next step for the agent
 5. A suggested reminder (due date in YYYY-MM-DD format, title, and context)
 
-Be specific. Reference details from the call and history. Adapt to the lead's stage and situation.`;
+Be specific. Reference details from the call and history. Adapt to the lead's stage and situation.
+
+Write everything ready to say as-is. Never use placeholders or square brackets such as [Name], [Company] or [our solution]. Use the agent's and the lead's real names from the data above. If a detail is not in the data (for example the agent's company or product), word the sentence naturally so it is not needed.`;
 }
 
 

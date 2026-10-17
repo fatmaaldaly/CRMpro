@@ -29,5 +29,6 @@ export const handleRouteError = (error: unknown) => {
     );
   }
 
+  console.error("Unhandled route error:", error);
   return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 };
